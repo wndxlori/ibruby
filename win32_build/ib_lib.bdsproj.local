@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2006/11/10 09:29:29.875.c,E:\desktop\Borland Studio Projects\Unit1.c=J:\ibruby\win32_build\Unit1.c</Transaction>
+    <Transaction>2006/11/10 09:29:38.328.bdsproj,E:\desktop\Borland Studio Projects\Project1.bdsproj=J:\ibruby\win32_build\ibruby.bdsproj</Transaction>
+    <Transaction>2006/11/10 12:58:54.312.bdsproj,J:\ibruby\win32_build\ibruby.bdsproj=J:\ibruby\win32_build\ib_lib.bdsproj</Transaction>
+    <Transaction>2006/11/15 21:17:41.921.def,J:\ibruby\src\fireruby-i386-mswin32.def=</Transaction>
+    <Transaction>2006/11/15 21:30:13.390.def,J:\ibruby\src\fireruby-i386-mswin32.def=</Transaction>
+    <Transaction>2006/11/15 21:32:05.406.c,J:\ibruby\win32_build\Unit1.c=</Transaction>
+  </Transactions>
+</BorlandProject>

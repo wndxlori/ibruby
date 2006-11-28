@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+  <Transactions>
+    <Transaction>2006/11/10 09:29:49.140.bdsgroup,E:\desktop\Borland Studio Projects\ProjectGroup1.bdsgroup=J:\ibruby\win32_build\ibruby_group.bdsgroup</Transaction>
+  </Transactions>
+  <Default.Personality>
+    <Projects ActiveProject="ib_lib.dll"/>
+  </Default.Personality>
+</BorlandProject>
