@@ -1,0 +1,1 @@
+ruby extconf.rb "--with-firebird-dir=c:\Program Files\Firebird\Firebird_1_5" "--with-win32-dir=c:\Program Files\Microsoft Visual C++ Toolkit 2003" "--with-winsdk-dir=c:\Program Files\Microsoft SDK" "--with-dotnet-dir=c:\Program Files\Microsoft Visual Studio .NET 2003\Vc7"
