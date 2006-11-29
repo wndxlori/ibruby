@@ -698,7 +698,7 @@ module IBRuby
       #                to be used in executing the SQL statement.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever a non-query SQL statement is
+      # IBRubyException::  Generated whenever a non-query SQL statement is
       #                      specified, an invalid connection or transaction is
       #                      provided or a problem occurs executing the SQL
       #                      against the database.

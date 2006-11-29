@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class RowCountTest < Test::Unit::TestCase
    CURDIR      = "#{Dir.getwd}"
-   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}row_count_test.fdb"
+   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}row_count_test.ib"
 
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING

@@ -53,7 +53,7 @@ VALUE rescueConvert(VALUE, VALUE);
 void storeBlob(VALUE, XSQLVAR *, ConnectionHandle *, TransactionHandle *);
 void populateBlobField(VALUE, XSQLVAR *, VALUE);
 void populateDoubleField(VALUE, XSQLVAR *);
-void populateFloatField(VALUE, XSQLVAR *);
+void populateFloatField(VALUE, XSQLVAR *);void populateBooleanField(VALUE,XSQLVAR *);
 void populateInt64Field(VALUE, XSQLVAR *);
 void populateLongField(VALUE, XSQLVAR *);
 void populateShortField(VALUE, XSQLVAR *);
@@ -90,18 +90,18 @@ VALUE toValue(XSQLVAR *entry,
                  column[256],
                  table[256];
       struct tm  datetime;
-      short      length;
-      double     actual;
-      BlobHandle *blob   = NULL;
-      VALUE      setting = getIBRubySetting("DATE_AS_DATE"),
-                 working = Qnil;
-
-      switch(type)
-      {
-         case SQL_ARRAY : /* Type: ARRAY */
-            /* TO BE DONE! */
-            break;
-
+	  short      length;
+	  double     actual;	  ISC_BOOLEAN	booleanActual;
+	  BlobHandle *blob   = NULL;
+	  VALUE      setting = getIBRubySetting("DATE_AS_DATE"),
+				 working = Qnil;
+	  fprintf( stderr, "converting type %d\n", type );	  
+	  switch(type)
+	  {
+		 case SQL_ARRAY : /* Type: ARRAY */
+			/* TO BE DONE! */
+			break;
+
          case SQL_BLOB:   /* Type: BLOB */
             memset(column, 0, 256);
             memset(table, 0, 256);
@@ -125,17 +125,28 @@ VALUE toValue(XSQLVAR *entry,
                rb_ary_push(value, createDate(&datetime));
             }
             else
-            {
-               rb_ary_push(value, createTime(&datetime));
-            }
-            rb_ary_push(value, getColumnType(entry));
-            break;
+			{
+			   rb_ary_push(value, createTime(&datetime));
+			}
+			rb_ary_push(value, getColumnType(entry));
+			break;
 
-         case SQL_DOUBLE : /* Type: DOUBLE PRECISION, DECIMAL, NUMERIC */
-            rb_ary_push(value, rb_float_new(*((double *)entry->sqldata)));
-            rb_ary_push(value, getColumnType(entry));
-            break;
-
+		 case SQL_DOUBLE : /* Type: DOUBLE PRECISION, DECIMAL, NUMERIC */
+			rb_ary_push(value, rb_float_new(*((double *)entry->sqldata)));
+			rb_ary_push(value, getColumnType(entry));
+			break;		case SQL_BOOLEAN: /* Type: BOOLEAN */
+			if ( *((ISC_BOOLEAN*)entry->sqldata) > 0 )
+			{
+				rb_ary_push(value, Qtrue );
+				rb_ary_push(value, getColumnType(entry));
+			}
+			else
+			{
+				rb_ary_push(value, Qfalse );
+				rb_ary_push(value, getColumnType(entry));
+			}
+
+
          case SQL_FLOAT : /* Type: FLOAT */
             rb_ary_push(value, rb_float_new(*((float *)entry->sqldata)));
             rb_ary_push(value, getColumnType(entry));
@@ -202,9 +213,9 @@ VALUE toValue(XSQLVAR *entry,
             isc_decode_sql_time((ISC_TIME *)entry->sqldata, &datetime);
             datetime.tm_year = 70;
             datetime.tm_mon  = 0;
-            datetime.tm_mday = 1;
+			datetime.tm_mday = 2;			fprintf( stderr, "datetime: %02d:%02d:%02d", datetime.tm_hour,            	datetime.tm_min, datetime.tm_sec );
             rb_ary_push(value, createTime(&datetime));
-            rb_ary_push(value, getColumnType(entry));
+			rb_ary_push(value, getColumnType(entry));			fprintf( stderr, "completed time" );
             break;
 
          case SQL_TIMESTAMP : /* Type: TIMESTAMP */
@@ -268,10 +279,10 @@ VALUE toArray(VALUE results)
    Data_Get_Struct(connection, ConnectionHandle, cHandle);
    Data_Get_Struct(results, ResultsHandle, rHandle);
    Data_Get_Struct(transaction, TransactionHandle, tHandle);
-   entry = rHandle->output->sqlvar;
+   entry = rHandle->output->sqlvar;   fprintf( stderr, "\nfieldcount: %d\n", rHandle->output->sqln ); 
    for(i = 0; i < rHandle->output->sqln; i++, entry++)
-   {
-      VALUE value = toValue(entry, &cHandle->handle, &tHandle->handle);
+   {	   VALUE value;	  fprintf(stderr, "field: %d", i );
+	   value = toValue(entry, &cHandle->handle, &tHandle->handle);
 
       rb_ary_push(array, value);
    }
@@ -312,11 +323,12 @@ void setParameters(XSQLDA *parameters, VALUE array, VALUE source)
                "specified for a SQL statement.");
    }
    parameters->sqln = parameters->sqld;
-   parameters->version = 1;
+   parameters->version = SQLDA_CURRENT_VERSION;
 
    /* Populate the parameters from the array's contents. */
    for(index = 0; index < size; index++, parameter++)
-   {
+   {    	// drops the bottom bit which indicates whether the field is nullable
+    	// which isn't relevant for setting params
       int type = (parameter->sqltype & ~1);
 
       value = rb_ary_entry(array, index);
@@ -328,12 +340,11 @@ void setParameters(XSQLDA *parameters, VALUE array, VALUE source)
          parameter->sqlind = 0;
          name = rb_funcall(name, rb_intern("name"), 0);
 		 switch(type)
-         {
-            case SQL_ARRAY : /* Type: ARRAY */
-               /* TO BE DONE! */
-               break;
-
-            case SQL_BLOB:   /* Type: BLOB */
+		 {			case SQL_BOOLEAN: /* Type: Boolean */				populateBooleanField( value, parameter );				break;            case SQL_ARRAY : /* Type: ARRAY */
+			   /* TO BE DONE! */
+			   break;
+            case SQL_BLOB:   /* Type: BLOB */
+
                populateBlobField(value, parameter, source);
                break;
 
@@ -502,9 +513,9 @@ VALUE createTime(const struct tm *datetime)
       VALUE arguments[6];
 
       /* Prepare the arguments. */
-      /*fprintf(stderr, "%d-%d-%d %d:%d:%d\n", datetime->tm_year + 1900,
-              datetime->tm_mon + 1, datetime->tm_mday, datetime->tm_hour,
-              datetime->tm_min, datetime->tm_sec);*/
+	  /*fprintf(stderr, "%d-%d-%d %d:%d:%d\n", datetime->tm_year + 1900,
+			  datetime->tm_mon + 1, datetime->tm_mday, datetime->tm_hour,
+              datetime->tm_min, datetime->tm_sec); */
       arguments[0] = INT2FIX(datetime->tm_year + 1900);
       arguments[1] = INT2FIX(datetime->tm_mon + 1);
       arguments[2] = INT2FIX(datetime->tm_mday);
@@ -740,7 +751,7 @@ VALUE rescueConvert(VALUE arguments, VALUE error)
 
    sprintf(text, "Error converting input column %ld from a %s to a %s.",
            FIX2INT(rb_ary_entry(arguments, 0)),
-           STR2CSTR(rb_ary_entry(arguments, 1)),
+		   STR2CSTR(rb_ary_entry(arguments, 1)),
            STR2CSTR(rb_ary_entry(arguments, 2)));
    message = rb_str_new2(text);
 
@@ -881,14 +892,14 @@ void populateDoubleField(VALUE value, XSQLVAR *field)
 
    if(TYPE(value) != T_FLOAT)
    {
-      if(rb_obj_is_kind_of(value, rb_cNumeric) || TYPE(value) == T_STRING)
-      {
-         actual = rb_funcall(value, rb_intern("to_f"), 0);
-      }
-      else
-      {
-         rb_ibruby_raise(NULL,
-                           "Error converting input parameter to double.");
+	  if(rb_obj_is_kind_of(value, rb_cNumeric) || TYPE(value) == T_STRING)
+	  {
+		 actual = rb_funcall(value, rb_intern("to_f"), 0);
+	  }
+	  else
+	  {
+		 rb_ibruby_raise(NULL,
+						   "Error converting input parameter to double.");
       }
    }
 
@@ -1004,12 +1015,12 @@ void populateLongField(VALUE value, XSQLVAR *field)
    }
    else if(TYPE(value) == T_STRING)
    {
-      actual = rb_funcall(value, rb_intern("to_i"), 0);
+	  actual = rb_funcall(value, rb_intern("to_i"), 0);
    }
    else
    {
-      rb_ibruby_raise(NULL,
-                        "Error converting input parameter to long integer.");
+	  rb_ibruby_raise(NULL,
+						"Error converting input parameter to long integer.");
    }
 
    full  = TYPE(actual) == T_FIXNUM ? FIX2INT(actual) : NUM2INT(actual);
@@ -1017,6 +1028,55 @@ void populateLongField(VALUE value, XSQLVAR *field)
    memcpy(field->sqldata, &store, field->sqllen);
    field->sqltype = SQL_LONG;
 }
+
+void populateBooleanField(VALUE value, XSQLVAR *field)
+{
+   VALUE     	actual = Qnil;
+   ISC_BOOLEAN full = 0;
+   ISC_BOOLEAN store  = 0;
+
+   if(TYPE(value) == T_TRUE || value == Qtrue )   {
+	 actual = T_TRUE;
+   }
+   else if(TYPE(value) == T_FALSE || value == Qfalse )
+   {
+	 actual = T_FALSE;
+   }
+   else if(TYPE(value) == T_STRING)
+   { // want to check for string based true and false
+	  char *rubyStr = STR2CSTR(value);
+
+	  if ( stricmp( "true", rubyStr ) == 0 )
+		actual = T_TRUE;
+	  else if ( stricmp( "false", rubyStr ) == 0 )
+		actual = T_FALSE;
+	  else
+	  {
+		char errText[512];
+
+		sprintf( errText, "Unable to convert to BOOLEAN text: " );
+
+		if ( strlen(rubyStr) < (511-strlen(errText)) ) {
+        	strcat( errText, rubyStr );
+		}
+		else
+        	strcat( errText, "string too long to print" );
+
+		rb_ibruby_raise(NULL, errText );
+	  }
+   }
+   else
+   {
+	  rb_ibruby_raise(NULL,
+						"Error converting input parameter to boolean.");
+   }
+
+
+   full  = TYPE(actual) == T_TRUE ? 1 : 0;
+   store = (ISC_BOOLEAN)full;
+   memcpy(field->sqldata, &store, field->sqllen);
+   field->sqltype = SQL_BOOLEAN;}
+
 
 
 /**

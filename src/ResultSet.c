@@ -144,7 +144,7 @@ VALUE initializeResultSet(VALUE self, VALUE connection, VALUE transaction,
    {
       rb_ibruby_raise(NULL, "Invalid transaction specified for result set.");
    }
-   
+   // figure out the numeric value for the dialect
    value = rb_funcall(dialect, rb_intern("to_i"), 0);
    if(TYPE(value) == T_FIXNUM)
    {
@@ -209,7 +209,7 @@ VALUE initializeResultSet(VALUE self, VALUE connection, VALUE transaction,
                            "Insufficient parameters specified for result set.");
       }
       
-      /* Allocate the XSQLDA and populate it. */
+      /* Allocate the XSQLDA and populate it. */	  fprintf( stderr, "Allocating %d inputs\n", inputs );
       params = allocateInXSQLDA(inputs, &results->handle, setting);
       prepareDataArea(params);
       setParameters(params, parameters, self);

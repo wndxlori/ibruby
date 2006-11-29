@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class RowTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
-   DB_FILE = "#{CURDIR}#{File::SEPARATOR}row_unit_test.fdb"
+   DB_FILE = "#{CURDIR}#{File::SEPARATOR}row_unit_test.ib"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -40,7 +40,7 @@ class RowTest < Test::Unit::TestCase
       @connection.start_transaction do |tx|
          tx.execute('create table rowtest (COL01 integer, COL02 varchar(10), '\
                     'COL03 integer)')
-         tx.execute('create table all_types (col01 bigint, col02 blob, '\
+         tx.execute('create table all_types (col01 boolean, col02 blob, '\
                     'col03 char(100), col04 date, col05 decimal(5,2), '\
                     'col06 double precision, col07 float, col08 integer, '\
                     'col09 numeric(10,3), col10 smallint, col11 time, '\
@@ -54,7 +54,7 @@ class RowTest < Test::Unit::TestCase
                               "?, ?, ?, ?, ?, ?, ?)",
                               3)
          #stmt.execute_for([nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil])
-         stmt.execute_for([100000, nil, 'La la la', Date.new(2005, 10, 29),
+         stmt.execute_for([false, nil, 'La la la', Date.new(2005, 10, 29),
                            10.23, 100.751, 56.25, 12345, 19863.21, 123,
                            Time.new, Time.new, 'The End!'])
       end
@@ -64,9 +64,9 @@ class RowTest < Test::Unit::TestCase
       @results.close
       @transaction.rollback
       @connection.close
-      if File::exist?(DB_FILE)
-         Database.new(DB_FILE).drop(DB_USER_NAME, DB_PASSWORD)
-      end
+      #if File::exist?(DB_FILE)
+      #   Database.new(DB_FILE).drop(DB_USER_NAME, DB_PASSWORD)
+      #end
       puts "#{self.class.name} finished." if TEST_LOGGING
    end
    
@@ -181,9 +181,10 @@ class RowTest < Test::Unit::TestCase
       
       begin
          results = @connection.execute_immediate('select * from all_types')
+         
          row     = results.fetch
          
-         assert(row.get_base_type(0) == SQLType::BIGINT)
+         assert(row.get_base_type(0) == SQLType::BOOLEAN)
          assert(row.get_base_type(1) == SQLType::BLOB)
          assert(row.get_base_type(2) == SQLType::CHAR)
          assert(row.get_base_type(3) == SQLType::DATE)
@@ -196,6 +197,7 @@ class RowTest < Test::Unit::TestCase
          assert(row.get_base_type(10) == SQLType::TIME)
          assert(row.get_base_type(11) == SQLType::TIMESTAMP)
          assert(row.get_base_type(12) == SQLType::VARCHAR)
+         
       ensure
          results.close if results != nil
       end

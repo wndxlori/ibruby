@@ -455,7 +455,7 @@ VALUE startTransactionRescue(VALUE transaction, VALUE error)
 
 /**
  * This function is used to wrap the call to the executeOnConnection() function
- * made by the executeOnConnectionImmediate() function to help insure that the
+ * made by the executeOnConnectionImmediate() function to help ensure that the
  * transaction is rolled back in case of an error.
  *
  * @param  array  An array of the parameters for the function to use.

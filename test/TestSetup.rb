@@ -8,4 +8,4 @@ $:.push("#{basedir}#{File::SEPARATOR}lib")
 
 DB_USER_NAME = 'sysdba'
 DB_PASSWORD  = 'masterkey'
-TEST_LOGGING = false
+TEST_LOGGING = true

@@ -304,6 +304,9 @@ void prepareDataArea(XSQLDA *da)
 
             break;
 
+		 case SQL_BOOLEAN :
+			field->sqldata = (char *)ALLOC(ISC_BOOLEAN);
+			break;
 
 
          case SQL_DOUBLE :
@@ -444,6 +447,9 @@ void releaseDataArea(XSQLDA *da)
 
             break;
 
+		 case SQL_BOOLEAN:
+			free((ISC_BOOLEAN *)field->sqldata);
+			break;
 
 
          case SQL_BLOB :

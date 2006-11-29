@@ -2,10 +2,10 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class KeyTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
@@ -18,7 +18,7 @@ class KeyTest < Test::Unit::TestCase
       end
       
       # Switch to the old way of keying.
-      $FireRubySettings[:ALIAS_KEYS] = false
+      $IBRubySettings[:ALIAS_KEYS] = false
       
       database     = Database::create(DB_FILE, DB_USER_NAME, DB_PASSWORD)
       @connection  = database.connect(DB_USER_NAME, DB_PASSWORD)
@@ -40,7 +40,7 @@ class KeyTest < Test::Unit::TestCase
       if File::exist?(DB_FILE)
          Database.new(DB_FILE).drop(DB_USER_NAME, DB_PASSWORD)
       end
-      $FireRubySettings[:ALIAS_KEYS] = true
+      $IBRubySettings[:ALIAS_KEYS] = true
       puts "#{self.class.name} finished." if TEST_LOGGING
    end
    

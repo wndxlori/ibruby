@@ -2,15 +2,15 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class DatabaseTest < Test::Unit::TestCase
    CURDIR      = "#{Dir.getwd}"
-   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}db_unit_test.fdb"
-   CREATE_FILE = "#{CURDIR}#{File::SEPARATOR}db_create_test.fdb"
+   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}db_unit_test.ibb"
+   CREATE_FILE = "#{CURDIR}#{File::SEPARATOR}db_create_test.ibb"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING

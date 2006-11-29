@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class AddRemoveUserTest < Test::Unit::TestCase
    CURDIR      = "#{Dir.getwd}"
-   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}add_remove_user_unit_test.fdb"
+   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}add_remove_user_unit_test.ib"
 
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -49,7 +49,7 @@ class AddRemoveUserTest < Test::Unit::TestCase
          cxn = @database.connect('newuser', 'password')
          cxn.close
          assert(false, "Able to connect as supposedly removed user.")
-      rescue FireRubyException
+      rescue IBRubyException
       end
    end
 end

@@ -106,7 +106,7 @@ VALUE getColumnType(const XSQLVAR *column)
    VALUE type = Qnil;
    
    switch((column->sqltype & ~1))
-   {
+   {	  case SQL_BOOLEAN:		 type = toSymbol("BOOLEAN");		 break;
       case SQL_BLOB:
          type = toSymbol("BLOB");
          break;
@@ -135,11 +135,10 @@ VALUE getColumnType(const XSQLVAR *column)
                type = toSymbol("DECIMAL");
             }
          }
-         else
-         {
-            type = toSymbol("BIGINT");
-         }
-         break;
+//         else//
+//         {//
+//            type = toSymbol("BIGINT");//
+//         }         break;
 
       case SQL_LONG:
          if(column->sqlsubtype != 0)

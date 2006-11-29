@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class DDLTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
-   DB_FILE = "#{CURDIR}#{File::SEPARATOR}ddl_unit_test.fdb"
+   DB_FILE = "#{CURDIR}#{File::SEPARATOR}ddl_unit_test.ibb"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -31,7 +31,7 @@ class DDLTest < Test::Unit::TestCase
          cxn.execute_immediate('CREATE TABLE DDL_TABLE_01 (TABLEID '\
                                'INTEGER NOT NULL, '\
                                'FIELD01 FLOAT, FIELD02 CHAR(50), '\
-                               'FIELD03 BIGINT, FIELD04 TIMESTAMP '\
+                               'FIELD03 NUMERIC(18,0), FIELD04 TIMESTAMP '\
                                'NOT NULL, FIELD05 VARCHAR(600))')
 
          cxn.start_transaction do |tx|

@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class ConnectionTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
-   DB_FILE = "#{CURDIR}#{File::SEPARATOR}con_unit_test.fdb"
+   DB_FILE = "#{CURDIR}#{File::SEPARATOR}con_unit_test.ib"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -82,14 +82,14 @@ class ConnectionTest < Test::Unit::TestCase
       @connections[0].execute("SELECT RDB$FIELD_NAME FROM RDB$FIELDS", tx) do |row|
          total = total + 1
       end
-      assert(total == 88)
+      assert(total == 113) # interbase has 113 field types for a newly created database vs firebird's 88
       tx.commit
 
       total = 0      
       @connections[0].execute_immediate("SELECT RDB$FIELD_NAME FROM RDB$FIELDS") do |row|
          total = total + 1
       end
-      assert(total == 88)
+      assert(total == 113)
    end
 
    def test04

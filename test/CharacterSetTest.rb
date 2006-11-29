@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class CharacterSetTest < Test::Unit::TestCase
    CURDIR   = "#{Dir.getwd}"
-   DB_FILE  = "#{CURDIR}#{File::SEPARATOR}cxnarset_unit_test.fdb"
+   DB_FILE  = "#{CURDIR}#{File::SEPARATOR}cxnarset_unit_test.ib"
    CHAR_SET = 'WIN1251'
    
    def setup
