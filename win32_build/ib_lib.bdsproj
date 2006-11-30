@@ -155,7 +155,7 @@
           <property category="win32.*.win32b.ilink32" name="option.m.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.map_segments.enabled" value="0"/>
           <property category="win32.*.win32b.ilink32" name="option.s.enabled" value="0"/>
-          <property category="win32.*.win32b.ilink32" name="param.deffile.1" value="J:\ibruby\src\fireruby-i386-mswin32.def"/>
+          <property category="win32.*.win32b.ilink32" name="param.deffile.1" value="J:\ibruby\trunk\src\fireruby-i386-mswin32.def"/>
           <property category="win32.*.win32b.ilink32" name="param.deffile.merge" value="1"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.1" value="import32.lib"/>
           <property category="win32.*.win32b.ilink32" name="param.libfiles.2" value="cw32mti.lib"/>
@@ -175,8 +175,6 @@
         <FILE FILENAME="..\src\Connection.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Connection" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\DataArea.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="DataArea" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\Database.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Database" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\src\FireRuby.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="FireRuby" FORMNAME="" DESIGNCLASS=""/>
-        <FILE FILENAME="..\src\FireRubyException.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="FireRubyException" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\Generator.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Generator" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\RemoveUser.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="RemoveUser" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\Restore.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Restore" FORMNAME="" DESIGNCLASS=""/>
@@ -188,6 +186,8 @@
         <FILE FILENAME="..\src\Transaction.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="Transaction" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\TypeMap.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="TypeMap" FORMNAME="" DESIGNCLASS=""/>
         <FILE FILENAME="..\src\fireruby-i386-mswin32.def" CONTAINERID="DefTool" LOCALCOMMAND="" UNITNAME="fireruby-i386-mswin32" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\src\IBRubyException.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="IBRubyException" FORMNAME="" DESIGNCLASS=""/>
+        <FILE FILENAME="..\src\IBRuby.c" CONTAINERID="CCompiler" LOCALCOMMAND="" UNITNAME="IBRuby" FORMNAME="" DESIGNCLASS=""/>
       </FILELIST>
       <IDEOPTIONS>
         <VersionInfo>
@@ -237,6 +237,11 @@
           <Parameters Name="LoadAllSymbols">True</Parameters>
           <Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
         </Parameters>
+        <Language>
+          <Language Name="ActiveLang"></Language>
+          <Language Name="ProjectLang">$00000000</Language>
+          <Language Name="RootDir"></Language>
+        </Language>
         <Linker>
           <Linker Name="LibPrefix"></Linker>
           <Linker Name="LibSuffix"></Linker>

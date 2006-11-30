@@ -2,15 +2,15 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 require 'date'
 
-include FireRuby
+include IBRuby
 
 class TypeTest < Test::Unit::TestCase
    CURDIR      = "#{Dir.getwd}"
-   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}types_unit_test.fdb"
+   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}types_unit_test.ib"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -67,7 +67,7 @@ class TypeTest < Test::Unit::TestCase
    end
 
    def test02
-      $FireRubySettings[:DATE_AS_DATE] = false
+      $IBRubySettings[:DATE_AS_DATE] = false
       rows = cxn = nil
       begin
          cxn = @db.connect(DB_USER_NAME, DB_PASSWORD)
@@ -87,6 +87,6 @@ class TypeTest < Test::Unit::TestCase
          rows.close if rows != nil
          cxn.close if cxn != nil
       end
-      $FireRubySettings[:DATE_AS_DATE] = true
+      $IBRubySettings[:DATE_AS_DATE] = true
    end
 end

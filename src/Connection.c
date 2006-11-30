@@ -602,11 +602,14 @@ char *createDPB(VALUE user, VALUE password, VALUE options, short *length)
          *length += 2;
       }
       
-      if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sys_user_name))) != Qnil)
-      {
-         *length += strlen(STR2CSTR(entry)) + 2;
-      }
-   }
+			 if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sys_user_name))) != Qnil)			 {
+				*length += strlen(STR2CSTR(entry)) + 2;
+			 }
+			 if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sql_role_name))) != Qnil)			 {
+				*length += strlen(STR2CSTR(entry)) + 2; // length of the role name + 2
+			 }
+
+		}
    dpb = ALLOC_N(char, *length);
    
    /* Populate the buffer. */
@@ -696,16 +699,25 @@ char *createDPB(VALUE user, VALUE password, VALUE options, short *length)
             *ptr++ = (char)number;
          }
          
-         if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sys_user_name))) != Qnil)
-         {
-            char *text = STR2CSTR(entry);
-            
-            size   = strlen(text);
-            *ptr++ = isc_dpb_sys_user_name;
-            *ptr++ = (char)size;
-            memcpy(ptr, text, size);
-            ptr    = ptr + size;
-         }
+					if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sys_user_name))) != Qnil)					{
+						 char *text = STR2CSTR(entry);
+
+						 size   = strlen(text);						 *ptr++ = isc_dpb_sys_user_name;
+						 *ptr++ = (char)size;
+						 memcpy(ptr, text, size);
+						 ptr    = ptr + size;
+					}
+
+					if((entry = rb_hash_aref(options, INT2FIX(isc_dpb_sql_role_name))) != Qnil)
+					{
+						 char *text = STR2CSTR(entry);
+
+						 size   = strlen(text);						 *ptr++ = isc_dpb_sql_role_name;
+						 *ptr++ = (char)size;
+						 memcpy(ptr, text, size);
+						 ptr    = ptr + size;
+					}
+
       }
    }
    else
@@ -876,5 +888,5 @@ void Init_Connection(VALUE module)
    rb_define_const(cConnection, "NUMBER_OF_CACHE_BUFFERS", INT2FIX(isc_dpb_num_buffers));
    rb_define_const(cConnection, "DBA_USER_NAME", INT2FIX(isc_dpb_sys_user_name));
    rb_define_const(cConnection, "WRITE_ASYNCHRONOUS", INT2FIX(0));
-   rb_define_const(cConnection, "WRITE_SYNCHRONOUS", INT2FIX(1));
+   rb_define_const(cConnection, "WRITE_SYNCHRONOUS", INT2FIX(1));   rb_define_const(cConnection, "ROLE", INT2FIX(isc_dpb_sql_role_name));
 }

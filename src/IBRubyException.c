@@ -226,9 +226,8 @@ VALUE rb_ibruby_exception_new(const char *message)
 void rb_ibruby_raise(ISC_STATUS *status, const char *message)
 {
    VALUE text = decodeException(status, message);
-   
-   rb_raise(cIBRubyException, STR2CSTR(text));
-}
+   rb_raise(cIBRubyException, STR2CSTR(text));}
+
 
 
 /**

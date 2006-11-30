@@ -64,9 +64,9 @@ class RowTest < Test::Unit::TestCase
       @results.close
       @transaction.rollback
       @connection.close
-      #if File::exist?(DB_FILE)
-      #   Database.new(DB_FILE).drop(DB_USER_NAME, DB_PASSWORD)
-      #end
+      if File::exist?(DB_FILE)
+         Database.new(DB_FILE).drop(DB_USER_NAME, DB_PASSWORD)
+      end
       puts "#{self.class.name} finished." if TEST_LOGGING
    end
    

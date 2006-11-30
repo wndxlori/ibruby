@@ -95,7 +95,7 @@ VALUE toValue(XSQLVAR *entry,
 	  BlobHandle *blob   = NULL;
 	  VALUE      setting = getIBRubySetting("DATE_AS_DATE"),
 				 working = Qnil;
-	  fprintf( stderr, "converting type %d\n", type );	  
+//	  fprintf( stderr, "converting type %d\n", type );
 	  switch(type)
 	  {
 		 case SQL_ARRAY : /* Type: ARRAY */
@@ -213,10 +213,8 @@ VALUE toValue(XSQLVAR *entry,
             isc_decode_sql_time((ISC_TIME *)entry->sqldata, &datetime);
             datetime.tm_year = 70;
             datetime.tm_mon  = 0;
-			datetime.tm_mday = 2;			fprintf( stderr, "datetime: %02d:%02d:%02d", datetime.tm_hour,            	datetime.tm_min, datetime.tm_sec );
-            rb_ary_push(value, createTime(&datetime));
-			rb_ary_push(value, getColumnType(entry));			fprintf( stderr, "completed time" );
-            break;
+			datetime.tm_mday = 2;//			fprintf( stderr, "datetime: %02d:%02d:%02d", datetime.tm_hour,//            	datetime.tm_min, datetime.tm_sec );            rb_ary_push(value, createTime(&datetime));
+			rb_ary_push(value, getColumnType(entry));//			fprintf( stderr, "completed time" );            break;
 
          case SQL_TIMESTAMP : /* Type: TIMESTAMP */
             isc_decode_timestamp((ISC_TIMESTAMP *)entry->sqldata, &datetime);
@@ -279,10 +277,10 @@ VALUE toArray(VALUE results)
    Data_Get_Struct(connection, ConnectionHandle, cHandle);
    Data_Get_Struct(results, ResultsHandle, rHandle);
    Data_Get_Struct(transaction, TransactionHandle, tHandle);
-   entry = rHandle->output->sqlvar;   fprintf( stderr, "\nfieldcount: %d\n", rHandle->output->sqln ); 
-   for(i = 0; i < rHandle->output->sqln; i++, entry++)
-   {	   VALUE value;	  fprintf(stderr, "field: %d", i );
-	   value = toValue(entry, &cHandle->handle, &tHandle->handle);
+   entry = rHandle->output->sqlvar;//   fprintf( stderr, "\nfieldcount: %d\n", rHandle->output->sqln );   for(i = 0; i < rHandle->output->sqln; i++, entry++)
+   {	   VALUE value;//	  fprintf(stderr, "field: %d", i );
+	   value = toValue(entry, &cHandle->handle, &tHandle->handle);
+
 
       rb_ary_push(array, value);
    }
@@ -1035,21 +1033,24 @@ void populateBooleanField(VALUE value, XSQLVAR *field)
    ISC_BOOLEAN full = 0;
    ISC_BOOLEAN store  = 0;
 
-   if(TYPE(value) == T_TRUE || value == Qtrue )   {
-	 actual = T_TRUE;
+   if(TYPE(value) == T_TRUE || value == Qtrue )
+   {
+	 actual = Qtrue;
    }
    else if(TYPE(value) == T_FALSE || value == Qfalse )
    {
-	 actual = T_FALSE;
+	 actual = Qfalse;
    }
    else if(TYPE(value) == T_STRING)
    { // want to check for string based true and false
-	  char *rubyStr = STR2CSTR(value);
+	  char *rubyStr;
+
+	  rubyStr = STR2CSTR(value);
 
 	  if ( stricmp( "true", rubyStr ) == 0 )
-		actual = T_TRUE;
+		actual = Qtrue;
 	  else if ( stricmp( "false", rubyStr ) == 0 )
-		actual = T_FALSE;
+		actual = Qfalse;
 	  else
 	  {
 		char errText[512];
@@ -1057,10 +1058,10 @@ void populateBooleanField(VALUE value, XSQLVAR *field)
 		sprintf( errText, "Unable to convert to BOOLEAN text: " );
 
 		if ( strlen(rubyStr) < (511-strlen(errText)) ) {
-        	strcat( errText, rubyStr );
+			strcat( errText, rubyStr );
 		}
 		else
-        	strcat( errText, "string too long to print" );
+			strcat( errText, "string too long to print" );
 
 		rb_ibruby_raise(NULL, errText );
 	  }
@@ -1071,11 +1072,11 @@ void populateBooleanField(VALUE value, XSQLVAR *field)
 						"Error converting input parameter to boolean.");
    }
 
-
    full  = TYPE(actual) == T_TRUE ? 1 : 0;
-   store = (ISC_BOOLEAN)full;
+   store = (ISC_BOOLEAN)full;
+
    memcpy(field->sqldata, &store, field->sqllen);
-   field->sqltype = SQL_BOOLEAN;}
+   field->sqltype = SQL_BOOLEAN;}
 
 
 

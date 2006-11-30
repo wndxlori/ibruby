@@ -344,51 +344,50 @@ VALUE executeStatementFor(VALUE self, VALUE parameters)
    long              affected     = 0;
    StatementHandle   *statement   = NULL;
    TransactionHandle *transaction = NULL;
-      
-   if(type == isc_info_sql_stmt_select ||
-      type == isc_info_sql_stmt_select_for_upd)
+   if(type == isc_info_sql_stmt_select ||
+	  type == isc_info_sql_stmt_select_for_upd)
    {
-      /* Execute the statement via a ResultSet object. */
-      result = rb_result_set_new(rb_iv_get(self, "@connection"),
-                                 rb_iv_get(self, "@transaction"),
-                                 rb_iv_get(self, "@sql"),
-                                 rb_iv_get(self, "@dialect"),
-                                 parameters);
+	  /* Execute the statement via a ResultSet object. */
+	  result = rb_result_set_new(rb_iv_get(self, "@connection"),
+								 rb_iv_get(self, "@transaction"),
+								 rb_iv_get(self, "@sql"),
+								 rb_iv_get(self, "@dialect"),
+								 parameters);
    }
    else
    {
-      /* Check that sufficient parameters have been specified. */
-      Data_Get_Struct(self, StatementHandle, statement);
-      if(statement->inputs > 0)
-      {
-         VALUE value = Qnil;
-         int   size  = 0;
-         
-         if(parameters == Qnil)
-         {
-            rb_ibruby_raise(NULL,
-                              "Empty parameter list specified for statement.");
-         }
-         
-         value = rb_funcall(parameters, rb_intern("size"), 0);
-         size  = TYPE(value) == T_FIXNUM ? FIX2INT(value) : NUM2INT(value);
-         if(size < statement->inputs)
-         {
-            rb_ibruby_raise(NULL,
-                              "Insufficient parameters specified for statement.");
-         }
-         
-         /* Allocate the XSQLDA and populate it. */
-         statement->parameters = allocateInXSQLDA(statement->inputs,
-                                                  &statement->handle,
-                                                  statement->dialect);
-         prepareDataArea(statement->parameters);
-         setParameters(statement->parameters, parameters, self);
-      }
-   
-      /* Execute the statement. */
-      Data_Get_Struct(self, StatementHandle, statement);
-      Data_Get_Struct(rb_iv_get(self, "@transaction"), TransactionHandle,
+	  /* Check that sufficient parameters have been specified. */
+	  Data_Get_Struct(self, StatementHandle, statement);
+	  if(statement->inputs > 0)
+	  {
+		 VALUE value = Qnil;
+		 int   size  = 0;
+
+		 if(parameters == Qnil)
+		 {
+			rb_ibruby_raise(NULL,
+							  "Empty parameter list specified for statement.");
+		 }
+
+		 value = rb_funcall(parameters, rb_intern("size"), 0);
+		 size  = TYPE(value) == T_FIXNUM ? FIX2INT(value) : NUM2INT(value);
+		 if(size < statement->inputs)
+		 {
+			rb_ibruby_raise(NULL,
+							  "Insufficient parameters specified for statement.");
+		 }
+
+		 /* Allocate the XSQLDA and populate it. */
+		 statement->parameters = allocateInXSQLDA(statement->inputs,
+												  &statement->handle,
+												  statement->dialect);
+		 prepareDataArea(statement->parameters);
+		 setParameters(statement->parameters, parameters, self);
+	  }
+
+	  /* Execute the statement. */
+	  Data_Get_Struct(self, StatementHandle, statement);
+	  Data_Get_Struct(rb_iv_get(self, "@transaction"), TransactionHandle,
                       transaction);
       execute(&transaction->handle, &statement->handle, statement->dialect,
               statement->parameters, statement->type, &affected);

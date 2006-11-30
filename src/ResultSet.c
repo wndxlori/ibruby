@@ -275,7 +275,9 @@ VALUE fetchResultSetEntry(VALUE self)
          }
       }
    }
-   
+//   fprintf( stderr, "Row is empty? %s", row == Qnil ? "Yes" : "No" );
+   
+
    return(row);
 }
 

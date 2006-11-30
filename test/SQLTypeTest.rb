@@ -2,10 +2,10 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class SQLTypeTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
@@ -21,7 +21,7 @@ class SQLTypeTest < Test::Unit::TestCase
       @connection = @database.connect(DB_USER_NAME, DB_PASSWORD)
 
       @connection.start_transaction do |tx|
-         tx.execute("create table all_types (col01 bigint, col02 blob, "\
+         tx.execute("create table all_types (col01 boolean, col02 blob, "\
                     "col03 char(100), col04 date, col05 decimal(5,2), "\
                     "col06 double precision, col07 float, col08 integer, "\
                     "col09 numeric(10,3), col10 smallint, col11 time, "\
@@ -40,7 +40,7 @@ class SQLTypeTest < Test::Unit::TestCase
 
    def test01
       types = []
-      types.push(SQLType.new(SQLType::BIGINT))
+      types.push(SQLType.new(SQLType::BOOLEAN))
       types.push(SQLType.new(SQLType::VARCHAR, 1000))
       types.push(SQLType.new(SQLType::DECIMAL, nil, 10))
       types.push(SQLType.new(SQLType::NUMERIC, nil, 5, 3))
@@ -50,7 +50,7 @@ class SQLTypeTest < Test::Unit::TestCase
       assert(!(types[0] == types[1]))
       assert(types[1] == SQLType.new(SQLType::VARCHAR, 1000))
 
-      assert(types[0].type      == SQLType::BIGINT)
+      assert(types[0].type      == SQLType::BOOLEAN)
       assert(types[0].length    == nil)
       assert(types[0].precision == nil)
       assert(types[0].scale     == nil)
@@ -84,7 +84,7 @@ class SQLTypeTest < Test::Unit::TestCase
    def test02
       types = SQLType.for_table("all_types", @connection)
 
-      assert(types['COL01'] == SQLType.new(SQLType::BIGINT))
+      assert(types['COL01'] == SQLType.new(SQLType::BOOLEAN))
       assert(types['COL02'] == SQLType.new(SQLType::BLOB, nil, nil, nil, 0))
       assert(types['COL03'] == SQLType.new(SQLType::CHAR, 100))
       assert(types['COL04'] == SQLType.new(SQLType::DATE))

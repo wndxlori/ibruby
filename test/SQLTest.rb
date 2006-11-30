@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class SQLTest < Test::Unit::TestCase
    CURDIR      = "#{Dir.getwd}"
-   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}sql_unit_test.fdb"
+   DB_FILE     = "#{CURDIR}#{File::SEPARATOR}sql_unit_test.ib"
    ITERATIONS  = 100
    
    INSERT_SQL  = "INSERT INTO TEST_TABLE VALUES(?, ?, ?, ?, ?, ?)"

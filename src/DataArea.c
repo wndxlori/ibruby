@@ -279,7 +279,7 @@ void prepareDataArea(XSQLDA *da)
 	  //strncpy( nameBuf, field->sqlname, field->sqlname_length );
 	  //nameBuf[field->sqlname_length] = 0;
 
-	  fprintf( stderr, "Field %d:%d", field->sqlname_length, field->sqltype );
+//	  fprintf( stderr, "Field %d:%d", field->sqlname_length, field->sqltype );
 
 
       field->sqldata = NULL;

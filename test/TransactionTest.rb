@@ -2,14 +2,14 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class TransactionTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
-   DB_FILE = "#{CURDIR}#{File::SEPARATOR}tx_unit_test.fdb"
+   DB_FILE = "#{CURDIR}#{File::SEPARATOR}tx_unit_test.ib"
    
    def setup
       puts "#{self.class.name} started." if TEST_LOGGING
@@ -107,6 +107,6 @@ class TransactionTest < Test::Unit::TestCase
       @transactions[0].execute(sql[1]) do |row|
          total += 1
       end
-      assert(total == 88)
+      assert(total == 113)
    end
 end

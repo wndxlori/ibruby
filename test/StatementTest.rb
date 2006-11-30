@@ -2,10 +2,10 @@
 
 require 'TestSetup'
 require 'test/unit'
-require 'rubygems'
-require 'fireruby'
+#require 'rubygems'
+require 'ibruby'
 
-include FireRuby
+include IBRuby
 
 class StatementTest < Test::Unit::TestCase
    CURDIR  = "#{Dir.getwd}"
