@@ -9,7 +9,7 @@ if PLATFORM.include?("win32")
    dir_config("winsdk")
    dir_config("dotnet")
 elsif PLATFORM.include?("linux")
-   $LDFLAGS = $LDFLAGS + " -lgds32"
+   $LDFLAGS = $LDFLAGS + " -lgds"
    $CFLAGS  = $CFLAGS + " -DOS_UNIX"
 end
 

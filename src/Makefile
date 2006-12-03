@@ -4,86 +4,84 @@ SHELL = /bin/sh
 #### Start of system configuration section. ####
 
 srcdir = .
-topdir = e:/ruby_bcc32/lib/ruby/1.8/i386-bccwin32
+topdir = /usr/local/lib/ruby/1.8/i686-linux
 hdrdir = $(topdir)
-VPATH = $(srcdir);$(topdir);$(hdrdir)
-
-DESTDIR = e:
-prefix = $(DESTDIR)/ruby_bcc32
+VPATH = $(srcdir):$(topdir):$(hdrdir)
+prefix = $(DESTDIR)/usr/local
 exec_prefix = $(prefix)
 sitedir = $(prefix)/lib/ruby/site_ruby
 rubylibdir = $(libdir)/ruby/$(ruby_version)
-top_srcdir = $(DESTDIR)./
+docdir = $(datarootdir)/doc/$(PACKAGE)
+dvidir = $(docdir)
+datarootdir = $(prefix)/share
 archdir = $(rubylibdir)/$(arch)
 sbindir = $(exec_prefix)/sbin
-datadir = $(prefix)/share
+psdir = $(docdir)
+localedir = $(datarootdir)/locale
+htmldir = $(docdir)
+datadir = $(datarootdir)
 includedir = $(prefix)/include
-infodir = $(prefix)/info
+infodir = $(datarootdir)/info
 sysconfdir = $(prefix)/etc
-mandir = $(prefix)/man
+mandir = $(datarootdir)/man
 libdir = $(exec_prefix)/lib
-sharedstatedir = $(DESTDIR)/etc
+sharedstatedir = $(prefix)/com
 oldincludedir = $(DESTDIR)/usr/include
+pdfdir = $(docdir)
 sitearchdir = $(sitelibdir)/$(sitearch)
-localstatedir = $(DESTDIR)/var
 bindir = $(exec_prefix)/bin
+localstatedir = $(prefix)/var
 sitelibdir = $(sitedir)/$(ruby_version)
 libexecdir = $(exec_prefix)/libexec
 
-CC = bcc32
-LIBRUBY = $(RUBY_SO_NAME).lib
-LIBRUBY_A = $(RUBY_SO_NAME)-static.lib
-LIBRUBYARG_SHARED = $(LIBRUBY)
-LIBRUBYARG_STATIC = $(LIBRUBY_A)
+CC = gcc
+LIBRUBY = $(LIBRUBY_A)
+LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
+LIBRUBYARG_SHARED = -Wl,-R -Wl,$(libdir) -L$(libdir) -L. 
+LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 
 RUBY_EXTCONF_H = 
-CFLAGS   =  -q -tWR -tWC  -O -6 -w- -wsus -wcpt -wdup -wext -wrng -wrpt -wzdi -I"C:\Program Files\Borland\BDS\4.0\include" -L"C:\Program Files\Borland\BDS\4.0\lib" -DOS_WIN32 
-INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir) -I"c:\program files\borland\interbase2007\sdk\include"
-CPPFLAGS =  
+CFLAGS   =  -fPIC -g -O2 -DOS_UNIX 
+INCFLAGS = -I. -I$(topdir) -I$(hdrdir) -I$(srcdir)
+CPPFLAGS =  -I/opt/interbase/include 
 CXXFLAGS = $(CFLAGS) 
-DLDFLAGS = gds32.lib -Tpd c0d32.obj 
-LDSHARED = ilink32 -q -Gn -L. -L"C:\Program Files\Borland\BDS\4.0\lib" -L"c:\program files\borland\interbase2007\sdk\lib"
-AR = tlib
-EXEEXT = .exe
+DLDFLAGS =  -lgds  
+LDSHARED = $(CC) -shared
+AR = ar
+EXEEXT = 
 
 RUBY_INSTALL_NAME = ruby
-RUBY_SO_NAME = bccwin32-ruby18
-arch = i386-bccwin32
-sitearch = i386-bccwin32
+RUBY_SO_NAME = ruby
+arch = i686-linux
+sitearch = i686-linux
 ruby_version = 1.8
-ruby = e:/ruby_bcc32/bin/ruby
-RUBY = $(ruby:/=\)
-RM = $(RUBY) -run -e rm -- -f
-!ifndef MAKEDIRS
-MAKEDIRS = @$(RUBY) -run -e mkdir -- -p
-!endif
-INSTALL = copy > nul
-!ifndef INSTALL_PROG
-INSTALL_PROG = $(INSTALL)
-!endif
-!ifndef INSTALL_DATA
-INSTALL_DATA = $(INSTALL)
-!endif
-COPY = copy > nul
+ruby = /usr/local/bin/ruby
+RUBY = $(ruby)
+RM = rm -f
+MAKEDIRS = mkdir -p
+INSTALL = /usr/bin/install -c
+INSTALL_PROG = $(INSTALL) -m 0755
+INSTALL_DATA = $(INSTALL) -m 644
+COPY = cp
 
 #### End of system configuration section. ####
 
 preload = 
 
-libpath = $(libdir)
-LIBPATH =  -L"$(libdir)"
-DEFFILE = $(TARGET)-$(arch).def
+libpath = /opt/interbase/lib $(libdir)
+LIBPATH =  -L'/opt/interbase/lib' -Wl,-R'/opt/interbase/lib' -L'$(libdir)' -Wl,-R'$(libdir)'
+DEFFILE = 
 
 CLEANFILES = 
-DISTCLEANFILES = $(DEFFILE)
+DISTCLEANFILES = 
 
 extout = 
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = $(LIBRUBYARG_SHARED)   cw32i.lib import32.lib ws2_32.lib  
-SRCS = AddUser.c Backup.c Blob.c Common.c Connection.c DataArea.c Database.c Generator.c IBRuby.c IBRubyException.c RemoveUser.c Restore.c ResultSet.c Row.c ServiceManager.c Services.c Statement.c Transaction.c TypeMap.c
-OBJS = AddUser.obj Backup.obj Blob.obj Common.obj Connection.obj DataArea.obj Database.obj Generator.obj IBRuby.obj IBRubyException.obj RemoveUser.obj Restore.obj ResultSet.obj Row.obj ServiceManager.obj Services.obj Statement.obj Transaction.obj TypeMap.obj
+LIBS =   -ldl -lcrypt -lm   -lc
+SRCS = Blob.c DataArea.c IBRubyException.c Row.c Common.c ResultSet.c Connection.c Backup.c Restore.c ServiceManager.c Generator.c Database.c AddUser.c Services.c RemoveUser.c Transaction.c IBRuby.c Statement.c TypeMap.c
+OBJS = Blob.o DataArea.o IBRubyException.o Row.o Common.o ResultSet.o Connection.o Backup.o Restore.o ServiceManager.o Generator.o Database.o AddUser.o Services.o RemoveUser.o Transaction.o IBRuby.o Statement.o TypeMap.o
 TARGET = ib_lib
 DLLIB = $(TARGET).so
 EXTSTATIC = 
@@ -95,17 +93,17 @@ RUBYARCHDIR   = $(sitearchdir)$(target_prefix)
 
 TARGET_SO     = $(DLLIB)
 CLEANLIBS     = $(TARGET).so $(TARGET).il? $(TARGET).tds $(TARGET).map
-CLEANOBJS     = *.obj *.lib *.s[ol] *.pdb *.exp *.bak
+CLEANOBJS     = *.o *.a *.s[ol] *.pdb *.exp *.bak
 
 all:		$(DLLIB)
 static:		$(STATIC_LIB)
 
 clean:
-		@-$(RM) $(CLEANLIBS:/=\) $(CLEANOBJS:/=\) $(CLEANFILES:/=\)
+		@-$(RM) $(CLEANLIBS) $(CLEANOBJS) $(CLEANFILES)
 
 distclean:	clean
 		@-$(RM) Makefile $(RUBY_EXTCONF_H) conftest.* mkmf.log
-		@-$(RM) core ruby$(EXEEXT) *~ $(DISTCLEANFILES:/=\)
+		@-$(RM) core ruby$(EXEEXT) *~ $(DISTCLEANFILES)
 
 realclean:	distclean
 install: install-so install-rb
@@ -113,7 +111,7 @@ install: install-so install-rb
 install-so: $(RUBYARCHDIR)
 install-so: $(RUBYARCHDIR)/$(DLLIB)
 $(RUBYARCHDIR)/$(DLLIB): $(DLLIB)
-	$(INSTALL_PROG) $(DLLIB:/=\) $(RUBYARCHDIR:/=\)
+	$(INSTALL_PROG) $(DLLIB) $(RUBYARCHDIR)
 install-rb: pre-install-rb install-rb-default
 install-rb-default: pre-install-rb-default
 pre-install-rb: Makefile
@@ -125,66 +123,27 @@ site-install: site-install-so site-install-rb
 site-install-so: install-so
 site-install-rb: install-rb
 
-.path.c = $(VPATH)
-.path.m = $(VPATH)
-.path.cccxxcpp = $(VPATH)
-.SUFFIXES: .c .m .cc .cxx .cpp .obj
+.SUFFIXES: .c .m .cc .cxx .cpp .C .o
 
-{$(srcdir)}.cc{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
+.cc.o:
+	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-{$(topdir)}.cc{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
+.cxx.o:
+	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-{$(hdrdir)}.cc{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
+.cpp.o:
+	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-.cc.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
+.C.o:
+	$(CXX) $(INCFLAGS) $(CPPFLAGS) $(CXXFLAGS) -c $<
 
-{$(srcdir)}.cxx{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
+.c.o:
+	$(CC) $(INCFLAGS) $(CPPFLAGS) $(CFLAGS) -c $<
 
-{$(topdir)}.cxx{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-{$(hdrdir)}.cxx{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-.cxx.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-{$(srcdir)}.cpp{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-{$(topdir)}.cpp{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-{$(hdrdir)}.cpp{}.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-.cpp.obj:
-	$(CXX) $(INCFLAGS) $(CXXFLAGS) $(CPPFLAGS) -P -c $(<:/=\)
-
-{$(srcdir)}.c{}.obj:
-	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) -c $(<:/=\)
-
-{$(topdir)}.c{}.obj:
-	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) -c $(<:/=\)
-
-{$(hdrdir)}.c{}.obj:
-	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) -c $(<:/=\)
-
-.c.obj:
-	$(CC) $(INCFLAGS) $(CFLAGS) $(CPPFLAGS) -c $(<:/=\)
-
-$(DLLIB): $(DEFFILE) $(OBJS)
+$(DLLIB): $(OBJS)
 	@-$(RM) $@
-	$(LDSHARED) $(DLDFLAGS) $(LIBPATH) $(OBJS), $(@:/=\), nul, $(LIBS) $(LOCAL_LIBS), $(DEFFILE), $(RESFILE)
+	$(LDSHARED) $(DLDFLAGS) $(LIBPATH) -o $@ $(OBJS) $(LOCAL_LIBS) $(LIBS)
 
 
 
-$(DEFFILE): 
-	$(RUBY) -e "puts 'EXPORTS', '_Init_$(TARGET)'"  > $@
-
-$(OBJS): {.;$(VPATH)}ruby.h {.;$(VPATH)}defines.h
+$(OBJS): ruby.h defines.h

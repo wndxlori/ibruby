@@ -28,6 +28,7 @@
 #include <time.h>
 #include <math.h>
 #include <limits.h>
+#include <string.h>
 #include "Blob.h"
 #include "Connection.h"
 #include "Transaction.h"
@@ -1041,15 +1042,15 @@ void populateBooleanField(VALUE value, XSQLVAR *field)
    {
 	 actual = Qfalse;
    }
-   else if(TYPE(value) == T_STRING)
+   else 
    { // want to check for string based true and false
 	  char *rubyStr;
 
-	  rubyStr = STR2CSTR(value);
+	  rubyStr = STR2CSTR(StringValue(value));
 
-	  if ( stricmp( "true", rubyStr ) == 0 )
+	  if ( strncasecmp( "true", rubyStr, 4 ) == 0 )
 		actual = Qtrue;
-	  else if ( stricmp( "false", rubyStr ) == 0 )
+	  else if ( strncasecmp( "false", rubyStr, 5 ) == 0 )
 		actual = Qfalse;
 	  else
 	  {
@@ -1065,11 +1066,6 @@ void populateBooleanField(VALUE value, XSQLVAR *field)
 
 		rb_ibruby_raise(NULL, errText );
 	  }
-   }
-   else
-   {
-	  rb_ibruby_raise(NULL,
-						"Error converting input parameter to boolean.");
    }
 
    full  = TYPE(actual) == T_TRUE ? 1 : 0;

@@ -44,6 +44,10 @@
 #include "Transaction.h"
 #include "Restore.h"
 #include "Row.h"
+
+#ifdef OS_UNIX
+  #define __declspec(X) 
+#endif
 
 
 /**
@@ -240,3 +244,4 @@ extern __declspec(dllimport) void Init_ib_lib(void)
    Init_RemoveUser(module);
    Init_Restore(module);
 }
+
