@@ -1,0 +1,1 @@
+ruby extconf.rb --with-interbase2007-dir=c:\progra~1\borland\interbase2007\sdk --with-win32-dir=C:\Progra~1\Borland\BDS\4.0
