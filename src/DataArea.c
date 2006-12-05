@@ -50,10 +50,9 @@
 
 /* Includes. */
 
-#include "DataArea.h"
-
 #include "IBRubyException.h"
 
+#include "DataArea.h"
 
 
 #ifdef OS_UNIX
@@ -67,7 +66,7 @@
 
    typedef long      int32_t;
 
-   typedef long long int64_t;
+//   typedef long long int64_t; // used ISC_INT64 instead
 #endif
 
 #endif
@@ -327,7 +326,7 @@ void prepareDataArea(XSQLDA *da)
 
          case SQL_INT64 :
 
-            field->sqldata = (char *)ALLOC(int64_t);
+            field->sqldata = (char *)ALLOC(ISC_INT64);
 
             break;
 
@@ -478,7 +477,7 @@ void releaseDataArea(XSQLDA *da)
 
          case SQL_INT64 :
 
-            free((int64_t *)field->sqldata);
+            free((ISC_INT64 *)field->sqldata);
 
             break;
 

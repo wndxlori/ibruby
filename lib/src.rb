@@ -1,13 +1,13 @@
 #
 # This file is a stand-in that allows for the generation of rdoc documentation
-# for the FireRuby extension for the Ruby programming language. The extension
+# for the IBRuby extension for the Ruby programming language. The extension
 # is coded in C and documented with Doxygen comments, so this file is used to
 # generate the native Ruby documentation instead.
 #
 
 #
 # This module contains all of the classes and definitions relating to the
-# FireRuby extension for the Ruby language.
+# IBRuby extension for the Ruby language.
 #
 module IBRuby
    #
@@ -46,7 +46,7 @@ module IBRuby
       
       
       #
-      # This function generates a simple description string for a FireRubyError
+      # This function generates a simple description string for a IBRubyError
       # object.
       #
       def to_s
@@ -115,7 +115,7 @@ module IBRuby
       # password::  The password to be used in dropping the database.
       #
       # ==== Exceptions
-      # FireRubyError::  Thrown whenever a problem occurs dropping the database
+      # IBRubyError::  Thrown whenever a problem occurs dropping the database
       #                  instance.
       #
       def drop(user, password)
@@ -173,7 +173,7 @@ module IBRuby
    
    
    #
-   # This class represents a connection with a Firebird database.
+   # This class represents a connection with a InterBase database.
    #
    class Connection
       # A definition for a connection option. This option should be given a
@@ -497,7 +497,7 @@ module IBRuby
       #                constants defined within the class.
       #
       # ==== Exceptions
-      # FireRubyError::  Generated whenever a problem occurs creating the
+      # IBRubyError::  Generated whenever a problem occurs creating the
       #                  transaction.
       #
       def Transaction.create(connections, parameters)
@@ -561,7 +561,7 @@ module IBRuby
       # transaction::  The Transaction object that the SQL statement will be
       #                executed under.
       # sql::          The SQL statement to be prepared for execution.
-      # dialect::      The Firebird dialect to be used in preparing the SQL
+      # dialect::      The InterBase dialect to be used in preparing the SQL
       #                statement.
       #
       def initialize(connection, transaction, sql, dialect)
@@ -666,7 +666,7 @@ module IBRuby
       # no further use.
       #
       # ==== Exceptions
-      # FireRubyError::  Generated whenever a problem occurs closing the
+      # IBRubyError::  Generated whenever a problem occurs closing the
       #                  statement object.
       #
       def close
@@ -694,7 +694,7 @@ module IBRuby
       #                in executing the SQL query.
       # sql::          A reference to a String containing the SQL query that
       #                will be executed.
-      # dialect::      A reference to an integer containing the Firebird dialect
+      # dialect::      A reference to an integer containing the InterBase dialect
       #                to be used in executing the SQL statement.
       #
       # ==== Exceptions
@@ -830,7 +830,7 @@ module IBRuby
       # will not cause an error.
       #
       # ==== Exceptions
-      # FireRubyError::  Generated whenever a problem occurs closing the result
+      # IBRubyError::  Generated whenever a problem occurs closing the result
       #                  set object.
       #
       def close
@@ -1091,7 +1091,7 @@ module IBRuby
    class Blob
       #
       # This is the constructor for the Blob class. This shouldn't really be
-      # used outside of the FireRuby library.
+      # used outside of the IBRuby library.
       #
       def initialize
       end
@@ -1122,7 +1122,7 @@ module IBRuby
    
    
    #
-   # This class represents a Firebird generator entity.
+   # This class represents a InterBase generator entity.
    #
    class Generator
       #
@@ -1229,9 +1229,8 @@ module IBRuby
    
    
    #
-   # This class represents a connection to the service manager for a Firebird
-   # database server instance. NOTE: This class does not currently work on the
-   # Mac OS X platform.
+   # This class represents a connection to the service manager for a InterBase
+   # database server instance. 
    #
    class ServiceManager
       #
@@ -1280,7 +1279,7 @@ module IBRuby
       # tasks::  One or more task objects to be executed by the service manager.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever this method is called on a
+      # IBRubyException::  Generated whenever this method is called on a
       #                      disconnected service manager or is a problem
       #                      occurs executing one of the tasks.
       #
@@ -1329,7 +1328,7 @@ module IBRuby
       #            on.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever a disconnected service manager
+      # IBRubyException::  Generated whenever a disconnected service manager
       #                      is specified or an error occurs executing the
       #                      task.
       #
@@ -1369,7 +1368,7 @@ module IBRuby
       #            on.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever a disconnected service manager
+      # IBRubyException::  Generated whenever a disconnected service manager
       #                      is specified or an error occurs executing the
       #                      task.
       #
@@ -1380,7 +1379,7 @@ module IBRuby
    
    #
    # This class represents a service manager task to backup an existing database
-   # on the Firebird server. NOTE: This class does not currently work on the
+   # on the InterBase server. NOTE: This class does not currently work on the
    # Mac OS X platform.
    #
    class Backup
@@ -1540,7 +1539,7 @@ module IBRuby
       #            task against.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever a disconnected service manager
+      # IBRubyException::  Generated whenever a disconnected service manager
       #                      is specified or a problem occurs executing the
       #                      task.
       #
@@ -1561,7 +1560,7 @@ module IBRuby
    
    #
    # This class represents a service manager task to restore a previously
-   # created database backup on the Firebird server. NOTE: This class does not
+   # created database backup on the InterBase server. NOTE: This class does not
    # currently work on the Mac OS X platform.
    #
    class Restore
@@ -1775,7 +1774,7 @@ module IBRuby
       #            task against.
       #
       # ==== Exceptions
-      # FireRubyException::  Generated whenever a disconnected service manager
+      # IBRubyException::  Generated whenever a disconnected service manager
       #                      is specified or a problem occurs executing the
       #                      task.
       #

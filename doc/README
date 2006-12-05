@@ -1,9 +1,16 @@
-= FireRuby Version 0.4.1
-FireRuby is an extension for the Ruby programming language that provides access
-to the Firebird open source RDBMS. The FireRuby library is release under the
-Mozilla Public Licence version 1.1 and is free for commercial use.
+= IBRuby Version 0.5
+IBRuby is an extension for the Ruby programming language that provides access
+to the InterBase RDBMS from CodeGear (formally Borland). The IBRuby library is released under the Mozilla Public Licence version 1.1 and is free for commercial use.
 
 ---
+
+-- IBRuby 0.5.1 notes - Dec 2006
+
+Thanks to the work of Peter Wood, providing support for InterBase was relatively straight forward. This release adds direct support for InterBase and is compiled against InterBase 2007 (aka IB 8). It includes direct support for Boolean data types and SQL Roles. 
+
+I migrated to 0.5.1 because of changes I needed to make to the source code to make it link under Visual C++ 6.0 (weird, weird problems) and updating of the src.rb file to remove Firebird-isms.
+
+--- FireRuby 0.4.x notes
 
 == Enhancements & Alterations
 
