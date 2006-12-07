@@ -321,8 +321,8 @@ VALUE toValue(XSQLVAR *entry,
             else
 
             {
-
-               rb_ary_push(value, LL2NUM(*((ISC_INT64 *)entry->sqldata)));
+								ISC_INT64 colVal = *((ISC_INT64 *)entry->sqldata));
+								rb_ary_push(value, LL2NUM();
 
             }
 

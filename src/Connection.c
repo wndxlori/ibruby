@@ -1082,6 +1082,12 @@ VALUE executeImmediateRescue(VALUE set, VALUE error)
 
 }
 
+VALUE getTransactions(VALUE self)
+{
+	VALUE      transactions = rb_iv_get(self, "@transactions");
+
+	return transactions;
+}
 
 
 
@@ -1744,7 +1750,7 @@ void Init_Connection(VALUE module)
 
    rb_define_method(cConnection, "execute_immediate", executeOnConnectionImmediate, 1);
 
-   
+   rb_define_method(cConnection, "transactions", getTransactions, 0 );
 
    rb_define_const(cConnection, "MARK_DATABASE_DAMAGED", INT2FIX(isc_dpb_damaged));
 
