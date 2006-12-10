@@ -20,7 +20,18 @@
 # (richard@developers-inc.co.nz). 
 
 module IBRuby
-  class InterBaseIndex < Struct.new(:table, :name, :unique, :columns, :direction, :active) #:nodoc:
+  class InterBaseIndex
+  
+    attr_accessor :table, :name, :unique, :columns, :direction, :active
+    
+    def initialize(table, name, unique, columns, direction = nil, active = nil)
+      @table = table
+      @name = name
+      @unique = unique
+      @columns = columns
+      @direction = direction
+      @active = active
+    end
   
     INDEX_ACTIVE = :INDEX_ACTIVE
     INDEX_INACTIVE = :INDEX_INACTIVE
@@ -32,7 +43,9 @@ module IBRuby
       end
       sql << " index"
       
-      if !@direction.nil?
+      sql << " #{@name}"
+      
+      if @direction
         case @direction
           when InterBaseMetaFunction::ASCENDING
             sql << " asc"
@@ -44,19 +57,22 @@ module IBRuby
       sql << " on #{@table} ("
       columns.each() do |col|
         sql << ", " unless col == columns.first
-        sql << columns.name
+        sql << ((col == InterBaseColumn) ? col.name : col.to_s)
       end
       
       sql << ")"
       
+      puts "sql is #{sql}"
+      
       sql
     end
     
-    def create(conn)
-      conn.execute_immediate(to_sql)
+    def create_index(conn)
+      puts #{to_sql} vs #{self.to_sql}"
+      conn.execute_immediate(self.to_sql)
     end
     
-    def rename(conn, new_name)
+    def rename_index(conn, new_name)
       old_name = @name
       @name = new_name
       begin
@@ -74,18 +90,71 @@ module IBRuby
       conn.execute_immediate( sql )      
     end
 
-    def remove(conn)
+    def remove_index(conn)
       conn.execute_immediate( "DROP INDEX #{name}" )
     end
   end
   
-  class InterBaseTable 
-    attr_reader :name, :columns, :indices
+  class InterBaseConstraint
+    attr_accessor :name, :type, :columns, :table
     
-    def initialize(name, columns=[], indices=[])
-      @name = name.upcase
+    PRIMARY_KEY = :PRIMARY_KEY
+    FOREIGN_KEY = :FOREIGN_KEY
+    
+    # columns are strings only, not complete columns. if they are complete columns
+    # then we just get their name
+    def initialize(type, columns, name=nil)
+      @name = name
+      @type = type
+      @columns = columns
+    end
+    
+    def to_sql
+      sql = "alter table #{table.name} add "
+      
+      if @type == :PRIMARY_KEY
+        sql << "primary key ("
+        sql << cycle_cols
+        sql << ")"
+      else
+        raise NotImplementedError, "Other constraints not implemented yet"
+      end
+    end
+    
+    private
+      def cycle_cols
+        sql = ""
+        if !@columns.nil?
+          col_count = 0
+          @columns.each() do |col|
+            sql << ", " unless col_count == 0
+            col_count += 1 # can't use columns.first as it may not be passed first by each????
+            if col === InterBaseColumn
+              sql << col.name
+            else
+              sql << col.to_s
+            end
+          end
+        end
+        
+        sql
+      end
+    
+  end
+  
+  class InterBaseTable 
+    attr_accessor :name, :columns, :indices, :constraints
+    
+    def initialize(name, columns=[], indices=[], constraints=[] )
+      puts "table name new table: #{name}"
+      @name = name.to_s.upcase
       @columns = columns
       @indices = indices
+      @constraints = constraints
+      
+      if @constraints
+        @constraints.each() {|c| c.table = self }
+      end
     end
     
     def load(conn)
@@ -93,11 +162,14 @@ module IBRuby
       @indices = InterBaseMetaFunctions.indices(conn,@name)
     end
     
+    def drop_table(conn)
+      conn.execute_immediate( "DROP TABLE #{name}" )
+    end
+    
     def create_table(conn)
-      conn.execute_immediate( to_sql )
-      
-      if !indices.nil?
-        indices.each() {|index| index.create(conn) }
+      to_sql.each() do |sql|
+        puts "executing: #{sql}"
+        conn.execute_immediate( sql )
       end
     end
     
@@ -107,11 +179,13 @@ module IBRuby
       
       sql << to_sql_create_table
       
-      if !indices.nil?
-        indices.each() {|index| sql << index.to_sql }
+      if @indices
+        @indices.each() {|index| sql << index.to_sql }
       end
       
-      sql.each() { |sqls| puts sqls }
+      if @constraints
+        @constraints.each() { |c| sql << c.to_sql }
+      end
       
       sql
     end
@@ -121,8 +195,10 @@ module IBRuby
       sql = "create table #{name} ("
       
       if !columns.nil?
+        col_count = 0
         columns.each() do |col|
-          sql << ", " unless col == columns.first
+          sql << ", " unless col_count == 0
+          col_count += 1
           sql << col.to_sql
         end
       end
@@ -159,7 +235,7 @@ module IBRuby
       tables = []
       
       conn.execute_immediate("select rdb$relation_name from rdb$relations where rdb$relation_name not starting 'RDB$' and rdb$flags=1") do |row|
-        tables << ib_to_ar_case(row[0].to_s.rstrip)
+        tables << row[0].to_s.rstrip
       end
       
       tables
@@ -179,7 +255,7 @@ module IBRuby
       
       conn.execute_immediate(indicesSQL) do |row|
         #puts "index #{ib_to_ar_case(row[0].to_s.rstrip)}"
-        indices << InterBaseIndex.new(table_name, ib_to_ar_case(row[0].to_s.rstrip), 
+        indices << InterBaseIndex.new(table_name, row[0].to_s.rstrip, 
                row[1].to_i == 1, [], 
                (row[3] == 1)?InterBaseMetaFunctions::DESCENDING : InterBaseMetaFunctions::ASCENDING, 
                (row[2] == 1)?InterBaseIndex::INDEX_INACTIVE : InterBaseIndex::INDEX_ACTIVE)
@@ -286,7 +362,7 @@ module IBRuby
           
         #end
       end
-      if ( types.size > 1 )
+      if ( types.size > 1 || column_name.nil? )
         types
       elsif (types.size == 1)
         types[0]
@@ -378,7 +454,8 @@ module IBRuby
     # default_source:: the whole string "default xxx" or "default 'xxx'"
     # not_null:   true for NOT NULL, false for nulls allowed
     # actual_default:: if specified then we don't bother processing default_source
-    def initialize(column_name, table_name, type, default_source=nil, not_null=false, length=nil, precision=nil, scale=nil, sub_type=nil, actual_default=nil )
+    def initialize(column_name, table_name, type, default_source=nil, not_null=false, 
+          length=nil, precision=nil, scale=nil, sub_type=nil, actual_default=nil )
       @name = column_name
       @table_name = table_name
       @not_null = not_null
@@ -388,18 +465,28 @@ module IBRuby
       @scale     = scale
       @sub_type  = sub_type
       
+      if actual_default
+        @default = actual_default
+      else
+        validate_default_source(default_source)
+      end
+    end
+    
+    def validate_default_source(default_source)
       if !default_source.nil?
+        puts "checking default: #{default_source}"
         match = Regexp.new( '^\s*DEFAULT\s+(.*)\s*', Regexp::IGNORECASE )
         matchData = match.match(default_source.to_s)
         @default = matchData[1]
+        
+        puts "result was #{@default} type is #{@type}"
         
         if @default && InterBaseColumn.expects_quoting(self)
           len = @default.size - 2
           @default = @default[1..len]
         end
-      elsif actual_default
-        @default = actual_default
       else
+        puts "default source passed is null"
         @default = nil
       end
     end
@@ -442,7 +529,7 @@ module IBRuby
         sql << " default "
         equote = expects_quoting
         sql << "'" if equote
-        sql << @default
+        sql << @default.to_s
         sql << "'" if equote
       end
       if @not_null == true
@@ -519,14 +606,20 @@ module IBRuby
     
     # we should also check to see if this table has indexes which need to be dropped and re-created
     # but the migrations user should really do that
-    def rename( connection, new_column_name )
+    def rename_column( connection, new_column_name )
       connection.execute_immediate( "alter table #{@table_name} alter column #{@name} to #{new_column_name}" )
+    end
+    
+    # this column does not exist in the database, please create it!
+    def add_column( connection )
+      connection.execute_immediate( "alter table #{@table_name} add #{self.to_sql}" )
     end
     
     def change_column(conn, new_column)
       
       if new_column.type != self   # should use == defined above
-        change_type_sql = "ALTER TABLE #{@table_name} alter column #{@name} type #{new_column.to_s}"
+        change_type_sql = "ALTER TABLE #{@table_name} alter #{@name} type #{new_column.to_s}"
+        puts change_type_sql
         conn.execute_immediate(change_type_sql)
       end
 
@@ -543,7 +636,7 @@ module IBRuby
       # changed default or changed type
       if (new_column.default != @default) || (new_column.type != self)
         # now the default change, which is complicated!
-        defaultSource = new_column.default.nil? ? "NULL" : ("default " << InterBaseMetaFunctions.quote(new_column.default, new_column ) )
+        defaultSource = new_column.default.nil? ? "" : ("default " << InterBaseMetaFunctions.quote(new_column.default, new_column ) )
         puts "alter table #{@table_name} add ib$$temp type #{new_column.to_s} #{defaultSource}"
         conn.execute_immediate("alter table #{@table_name} add ib$$temp #{new_column.to_s} #{defaultSource}")
         
