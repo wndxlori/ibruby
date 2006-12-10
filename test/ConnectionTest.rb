@@ -3,7 +3,7 @@
 require 'TestSetup'
 require 'test/unit'
 #require 'rubygems'
-require 'ibruby'
+require 'ib_lib'
 
 include IBRuby
 

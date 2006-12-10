@@ -19,4 +19,4 @@
 # Reserved.
 
 require 'ib_lib'
-require 'SQLType'
+require 'ibmeta'
