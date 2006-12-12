@@ -29,6 +29,9 @@ class MetaTest < Test::Unit::TestCase
         ")"
       #puts sql
       @connection.execute_immediate( @creation_sql );
+      @connection.execute_immediate( "create table pk_table(id integer not null primary key)" )
+      @connection.execute_immediate( "create table fk_table(id integer not null primary key, "\
+        "fk_id integer references pk_table(id))" )
       @pk_sql = "alter table mtest "
       
    end
@@ -56,12 +59,12 @@ class MetaTest < Test::Unit::TestCase
    end
    
    def test02
-    col = InterBaseMetaFunctions.table_meta_data( @connection, "mtest", true, "decimal2" )
+    col = InterBaseMetaFunctions.table_fields( @connection, "mtest", true, "decimal2" )
     new_col = col.dup
     new_col.precision = 16
     new_col.scale = 2
     col.change_column(@connection,new_col)
-    new_col = InterBaseMetaFunctions.table_meta_data( @connection, "mtest", true, "decimal2" )
+    new_col = InterBaseMetaFunctions.table_fields( @connection, "mtest", true, "decimal2" )
     
     assert_equal false, new_col == col, "column decimal2 not changed"
     assert_equal new_col.precision, 16, "column decimal2 precision not 16!"
@@ -69,13 +72,28 @@ class MetaTest < Test::Unit::TestCase
    end
    
    def test03
-     col = InterBaseMetaFunctions.table_meta_data( @connection, "mtest", true, "decimal2" )
-     col.rename( @connection, "decimal_rename" )
-     ren_col = InterBaseMetaFunctions.table_meta_data( @connection, "mtest", true, "decimal2" )
+     col = InterBaseMetaFunctions.table_fields( @connection, "mtest", true, "decimal2" )
+     col.rename_column( @connection, "decimal_rename" )
+     ren_col = InterBaseMetaFunctions.table_fields( @connection, "mtest", true, "decimal2" )
      assert_equal nil, ren_col, "column not renamed!"
-     new_col = InterBaseMetaFunctions.table_meta_data( @connection, "mtest", true, "decimal_rename" )
+     new_col = InterBaseMetaFunctions.table_fields( @connection, "mtest", true, "decimal_rename" )
      assert_equal new_col, col, "column types not identical after rename"
-     new_col.rename( @connection, "decimal2" )
+     new_col.rename_column( @connection, "decimal2" )
    end
-   
+
+   def test04
+     table = InterBaseTable.new('fk_table')
+     table.load(@connection)
+     assert_nothing_thrown( "unable build sql for table fk_table! " ) do
+       table.to_sql.each() {|sql| puts "table creation sql: #{sql}" }
+     end
+     assert_nothing_thrown( "unable to rename table" ) do
+       table.rename_table( @connection, 'new_fk_table' )
+     end
+     table = InterBaseTable.new('new_fk_table')
+     table.load(@connection)
+     assert_nothing_thrown( "unable build sql for table fk_table! " ) do
+       table.to_sql.each() {|sql| puts "table creation sql: #{sql}" }
+     end
+   end   
  end
