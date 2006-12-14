@@ -1,7 +1,7 @@
-Index: lib/active_record.rb
+Index: activerecord/lib/active_record.rb
 ===================================================================
---- lib/active_record.rb	(revision 5680)
-+++ lib/active_record.rb	(working copy)
+--- activerecord/lib/active_record.rb	(revision 5680)
++++ activerecord/lib/active_record.rb	(working copy)
 @@ -74,7 +74,7 @@
  end
  
@@ -11,10 +11,46 @@ Index: lib/active_record.rb
  end
  
  RAILS_CONNECTION_ADAPTERS.each do |adapter|
-Index: test/abstract_unit.rb
+Index: activerecord/lib/active_record/base.rb
 ===================================================================
---- test/abstract_unit.rb	(revision 5680)
-+++ test/abstract_unit.rb	(working copy)
+--- activerecord/lib/active_record/base.rb	(revision 5680)
++++ activerecord/lib/active_record/base.rb	(working copy)
+@@ -346,7 +346,7 @@
+     # adapters for, e.g., your development and test environments.
+     cattr_accessor :schema_format 
+     @@schema_format = :ruby
+-
++    
+     class << self # Class methods
+       # Find operates with three different retrieval approaches:
+       #
+Index: activerecord/lib/active_record/connection_adapters/abstract_adapter.rb
+===================================================================
+--- activerecord/lib/active_record/connection_adapters/abstract_adapter.rb	(revision 5680)
++++ activerecord/lib/active_record/connection_adapters/abstract_adapter.rb	(working copy)
+@@ -24,10 +24,18 @@
+       include Quoting, DatabaseStatements, SchemaStatements
+       @@row_even = true
+       
++      # Some databases use UPPER to determine case insignificance rather than LOWER
++      # This is particularly used in Validations
++      CASE_INSIGNIFICANT_LOWER = :CASE_INSIGNIFICANT_LOWER
++      CASE_INSIGNIFICANT_UPPER = :CASE_INSIGNIFICANT_UPPER
++      
++      attr_accessor :case_insignificant_test
++      
+       def initialize(connection, logger = nil) #:nodoc:
+         @connection, @logger = connection, logger
+         @runtime = 0
+         @last_verification = 0
++        @case_insignificant_test = CASE_INSIGNIFICANT_LOWER
+       end
+ 
+       # Returns the human-readable name of the adapter.  Use mixed case - one
+Index: activerecord/test/abstract_unit.rb
+===================================================================
+--- activerecord/test/abstract_unit.rb	(revision 5680)
++++ activerecord/test/abstract_unit.rb	(working copy)
 @@ -35,13 +35,17 @@
      end
    end
@@ -50,10 +86,10 @@ Index: test/abstract_unit.rb
      execute_without_query_counting(sql, name, &block)
    end
  end
-Index: test/aggregations_test.rb
+Index: activerecord/test/aggregations_test.rb
 ===================================================================
---- test/aggregations_test.rb	(revision 5680)
-+++ test/aggregations_test.rb	(working copy)
+--- activerecord/test/aggregations_test.rb	(revision 5680)
++++ activerecord/test/aggregations_test.rb	(working copy)
 @@ -3,8 +3,10 @@
  
  class AggregationsTest < Test::Unit::TestCase
@@ -73,10 +109,10 @@ Index: test/aggregations_test.rb
      assert_equal "35.544623640962634", customers(:david).gps_location.latitude
      assert_equal "-105.9309951055148", customers(:david).gps_location.longitude
  
-Index: test/associations_test.rb
+Index: activerecord/test/associations_test.rb
 ===================================================================
---- test/associations_test.rb	(revision 5680)
-+++ test/associations_test.rb	(working copy)
+--- activerecord/test/associations_test.rb	(revision 5680)
++++ activerecord/test/associations_test.rb	(working copy)
 @@ -392,7 +392,8 @@
      assert_equal a, firm.account(true)
    end
@@ -105,10 +141,10 @@ Index: test/associations_test.rb
  
      assert_equal 3, Developer.find(:all, :include => {:projects => :developers}, :conditions => 'developers_projects_join.joined_on IS NOT NULL', :group => group.join(",")).size
    end
-Index: test/base_test.rb
+Index: activerecord/test/base_test.rb
 ===================================================================
---- test/base_test.rb	(revision 5680)
-+++ test/base_test.rb	(working copy)
+--- activerecord/test/base_test.rb	(revision 5680)
++++ activerecord/test/base_test.rb	(working copy)
 @@ -579,6 +579,7 @@
    end
    
@@ -126,22 +162,41 @@ Index: test/base_test.rb
      assert xml.include?(%(<written-on type="datetime">#{written_on_in_current_timezone}</written-on>))
      assert xml.include?(%(<content>Have a nice day</content>))
      assert xml.include?(%(<author-email-address>david@loudthinking.com</author-email-address>))
-Index: test/method_scoping_test.rb
+Index: activerecord/test/connections/native_sqlite3/in_memory_connection.rb
 ===================================================================
---- test/method_scoping_test.rb	(revision 5680)
-+++ test/method_scoping_test.rb	(working copy)
-@@ -73,6 +73,7 @@
+--- activerecord/test/connections/native_sqlite3/in_memory_connection.rb	(revision 5680)
++++ activerecord/test/connections/native_sqlite3/in_memory_connection.rb	(working copy)
+@@ -15,4 +15,4 @@
+ 
+ make_connection(ActiveRecord::Base, 'sqlite.sql')
+ make_connection(Course, 'sqlite2.sql')
+-  load("#{File.dirname(__FILE__)}/../../fixtures/db_definitions/schema.rb"))
++  load("#{File.dirname(__FILE__)}/../../fixtures/db_definitions/schema.rb")
+Index: activerecord/test/method_scoping_test.rb
+===================================================================
+--- activerecord/test/method_scoping_test.rb	(revision 5680)
++++ activerecord/test/method_scoping_test.rb	(working copy)
+@@ -6,7 +6,7 @@
+ require 'fixtures/category'
+ 
+ class MethodScopingTest < Test::Unit::TestCase
+-  fixtures :developers, :projects, :comments, :posts
++  fixtures :developers, :projects, :comments, :posts, :developers_projects
    
-   def test_scoped_count_include
-     # with the include, will retrieve only developers for the given project
-+    puts "before scoped count"
-     Developer.with_scope(:find => { :include => :projects }) do
-       assert_equal 1, Developer.count(:conditions => 'projects.id = 2')
-     end
-Index: test/migration_test.rb
+   def test_set_conditions
+     Developer.with_scope(:find => { :conditions => 'just a test...' }) do
+@@ -189,6 +189,7 @@
+ 
+   def test_nested_scoped_find_merged_include
+     # :include's remain unique and don't "double up" when merging
++    
+     Developer.with_scope(:find => { :include => :projects, :conditions => "projects.id = 2" }) do
+       Developer.with_scope(:find => { :include => :projects }) do
+         assert_equal 1, Developer.instance_eval('current_scoped_methods')[:find][:include].length
+Index: activerecord/test/migration_test.rb
 ===================================================================
---- test/migration_test.rb	(revision 5680)
-+++ test/migration_test.rb	(working copy)
+--- activerecord/test/migration_test.rb	(revision 5680)
++++ activerecord/test/migration_test.rb	(working copy)
 @@ -204,17 +204,27 @@
      def test_native_decimal_insert_manual_vs_automatic
        # SQLite3 always uses float in violation of SQL
@@ -270,3 +325,18 @@ Index: test/migration_test.rb
        def test_create_table_with_binary_column
          Person.connection.drop_table :binary_testings rescue nil
  
+Index: activerecord/test/readonly_test.rb
+===================================================================
+--- activerecord/test/readonly_test.rb	(revision 5680)
++++ activerecord/test/readonly_test.rb	(working copy)
+@@ -58,8 +58,10 @@
+   end
+ 
+   def test_has_many_find_readonly
++    puts "here"
+     post = Post.find(1)
+     assert !post.comments.empty?
++    gets
+     assert !post.comments.any?(&:readonly?)
+     assert !post.comments.find(:all).any?(&:readonly?)
+     assert post.comments.find(:all, :readonly => true).all?(&:readonly?)
