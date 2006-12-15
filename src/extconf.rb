@@ -3,7 +3,7 @@ require 'mkmf'
 
 # Add the framework link for Mac OS X.
 if PLATFORM.include?("win32")
-   $LDFLAGS = $LDFLAGS + "gds32.lib"
+   $LDFLAGS = $LDFLAGS + "gds32_ms.lib"
    $CFLAGS  = $CFLAGS + " -DOS_WIN32"
    dir_config("win32")
    dir_config("winsdk")

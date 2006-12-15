@@ -599,7 +599,6 @@ VALUE closeResultSet(VALUE self)
 
       ISC_STATUS status[20];
 
-      
 
       if(isc_dsql_free_statement(status, &results->handle, DSQL_drop))
 

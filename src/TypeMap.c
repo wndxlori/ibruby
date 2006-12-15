@@ -307,22 +307,51 @@ VALUE toValue(XSQLVAR *entry,
             if(entry->sqlscale != 0)
 
             {
+				// this needs to be passed back as a BigDecimal
+				char buf[67], buf2[67];
+				VALUE actualAsString;
+				VALUE klass;
+				VALUE arguments[1];
 
-               double divisor  = pow(10, abs(entry->sqlscale));
+				int count = 0; // forward count, no idea how long string will be
+				int revCount = 0; // reverse count
+				int scale = abs(entry->sqlscale);
+
+				ISC_INT64 val = *((ISC_INT64 *)entry->sqldata);
+
+				while ( val > 0 )
+				{
+					buf[count] = '0' + (char)(val % 10);
+					count ++; 
+					val = val / 10;
+					scale --;
+					if ( scale == 0 )
+						buf[count++] = '.';
+				}
+
+				buf[count] = 0;
+				buf2[count] = 0;
+				while ( count -- )
+				{
+					buf2[revCount++] = buf[count];
+				}
 
 
+				// make the result into a Ruby string
+			   actualAsString = rb_str_new2(buf2);
 
-               actual = *((ISC_INT64 *)entry->sqldata);
+			   klass = getClass("BigDecimal");
 
-               rb_ary_push(value, rb_float_new(actual / divisor));
+			   arguments[0] = actualAsString;
+
+               rb_ary_push(value, rb_funcall2(klass, rb_intern("new"), 1, arguments) );
 
             }
 
             else
 
             {
-								ISC_INT64 colVal = *((ISC_INT64 *)entry->sqldata));
-								rb_ary_push(value, LL2NUM();
+				rb_ary_push(value, LL2NUM(*((ISC_INT64 *)entry->sqldata)));
 
             }
 
@@ -482,6 +511,7 @@ VALUE toValue(XSQLVAR *entry,
 
 
          default :
+			 fprintf( stderr, "Zoinks! Don't know what a %d is!", type );
 
             rb_ary_push(value, Qnil);
 

@@ -1,2 +1,2 @@
 rem on my computer, Visual Studio 8 is installed in c:\program files\MICROS~2 - use "DIR /X" to find the short names
-ruby extconf.rb --with-interbase2007-dir=j:\ibruby\trunk\win32_ib --with-win32-dir=C:\Progra~1\MICROS~2
+ruby extconf.rb --with-interbase2007-dir=..\win32_ib --with-win32-dir=C:\Progra~1\MICROS~2

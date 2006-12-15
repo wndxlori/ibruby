@@ -252,13 +252,13 @@ VALUE getColumnType(const XSQLVAR *column)
 
          }
 
-//         else
-//
-//         {
-//
-//            type = toSymbol("BIGINT");
-//
-//         }
+         else
+
+         {
+
+            type = toSymbol("INT64");
+
+         }
 
          break;
 
@@ -374,7 +374,12 @@ VALUE getColumnType(const XSQLVAR *column)
 
    }
 
-   
+
+   if ( type == Qnil )
+   {
+	   fprintf( stderr, "unknown col type %d", column->sqltype & ~1 );
+   }
+
 
    return(type);
 
@@ -429,6 +434,7 @@ extern void Init_ib_lib(void)
    /* Require needed libraries. */
 
    rb_require("date");
+   rb_require("bigdecimal"); // for INT64 DECIMAL or NUMERICs
 
 
 

@@ -1061,6 +1061,7 @@ void execute(isc_tr_handle *transaction, isc_stmt_handle *statement,
    if(isc_dsql_execute(status, transaction, statement, dialect, parameters))
 
    {
+	  
 
       rb_ibruby_raise(status, "Error executing SQL statement.");
 

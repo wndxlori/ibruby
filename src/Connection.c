@@ -739,6 +739,7 @@ static VALUE executeOnConnectionImmediate(VALUE self, VALUE sql)
    rb_ary_push(array, transaction);
 
    rb_ary_push(array, sql);
+   //fprintf( stderr, "running in own transaction %s\n", STR2CSTR(StringValue(sql)) );
 
    set = rb_rescue(executeBlock, array, executeRescue, transaction);
 
@@ -757,6 +758,7 @@ static VALUE executeOnConnectionImmediate(VALUE self, VALUE sql)
          if(rb_block_given_p())
 
          {
+			 //fprintf( stderr, "block exec\n" );
 
             results = rb_rescue(executeImmediateBlock, set,
 
@@ -767,7 +769,7 @@ static VALUE executeOnConnectionImmediate(VALUE self, VALUE sql)
          else
 
          {
-
+			//fprintf( stderr, "plain results?\n" );
             results = set;
 
          }
@@ -777,8 +779,11 @@ static VALUE executeOnConnectionImmediate(VALUE self, VALUE sql)
       else
 
       {
+		  //fprintf( stderr, "committing immediate transaction %s\n", STR2CSTR(StringValue(sql)) );
 
-         rb_funcall(transaction, rb_intern("commit"), 0);
+		 // force commit will ensure the transaction is committed or rollback, in either
+		 // case it needs to be removed as it is now defunct
+         rb_funcall(transaction, rb_intern("forceCommit"), 0); 
 
          results = set;
 
@@ -789,8 +794,9 @@ static VALUE executeOnConnectionImmediate(VALUE self, VALUE sql)
    else
 
    {
+	   //fprintf( stderr, "committing immediate transaction %s\n", STR2CSTR(StringValue(sql)) );
 
-      rb_funcall(transaction, rb_intern("commit"), 0);
+      rb_funcall(transaction, rb_intern("forceCommit"), 0);
 
    }
 
@@ -906,6 +912,35 @@ VALUE startTransactionRescue(VALUE transaction, VALUE error)
 
 
 
+/**
+ * The following two functions are the breakup of the statement execution. They ensure that
+ * the statement is actually closed. If an exception is raised on statement execution (say a failed
+ * insert), then the statement sticks around until it is garbage collected. Following statements
+ * may depend on the statement not holding onto database resources (which they will do until
+ * they are garbage collected). The example for migrations in Rails is a failed insert followed
+ * by a drop table, the table drop fails because the failed statement has not been garbage 
+ * collected.
+ *
+ * The rescue in the using statement will only ensure that the transaction is closed, not
+ * that the statement is released.
+*/
+
+VALUE executeStatementForExecuteBlock(VALUE statement)
+{
+	VALUE result      = Qnil;
+
+	result    = rb_execute_statement(statement);
+
+	return(result);
+}
+
+
+VALUE ensureStatementClosedForExecuteBlock(VALUE statement)
+{
+	rb_statement_close(statement);
+
+	return Qnil;
+}
 
 
 /**
@@ -950,10 +985,13 @@ VALUE executeBlock(VALUE array)
 
    statement = rb_statement_new(connection, transaction, sql, dialect);
 
-   result    = rb_execute_statement(statement);
 
-   rb_statement_close(statement);
+   //result    = rb_execute_statement(statement);
 
+   //rb_statement_close(statement);
+
+   result = rb_ensure( executeStatementForExecuteBlock, statement, 
+	   ensureStatementClosedForExecuteBlock, statement );
          
 
    return(result);
@@ -987,6 +1025,7 @@ VALUE executeBlock(VALUE array)
 VALUE executeRescue(VALUE transaction, VALUE error)
 
 {
+	//fprintf( stderr, "recuse, operation failed\n" );
 
    rb_funcall(transaction, rb_intern("rollback"), 0);
 
@@ -1417,7 +1456,7 @@ char *createDPB(VALUE user, VALUE password, VALUE options, short *length)
 					{
 						 char *text = STR2CSTR(entry);
 						 
-						 fprintf( stderr, "Role Name is: %s", text );
+						 //fprintf( stderr, "Role Name is: %s", text );
 
 						 size   = strlen(text);
 						 *ptr++ = isc_dpb_sql_role_name;

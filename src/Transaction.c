@@ -304,6 +304,7 @@ static VALUE commitTransaction(VALUE self)
 
       
 
+	  //fprintf( stderr, "transaction committing\n" );
       if(isc_commit_transaction(status, &transaction->handle) != 0)
 
       {
@@ -347,6 +348,74 @@ static VALUE commitTransaction(VALUE self)
 }
 
 
+static VALUE forceCommitTransaction(VALUE self)
+
+{
+
+   TransactionHandle *transaction = NULL;
+
+   
+
+   Data_Get_Struct(self, TransactionHandle, transaction);
+
+   
+
+   /* Commit the transaction. */
+
+   if(transaction->handle != 0)
+
+   {
+
+      ISC_STATUS status[20];
+
+      
+
+	  //fprintf( stderr, "transaction committing\n" );
+      if(isc_commit_transaction(status, &transaction->handle) != 0)
+
+      {
+
+		  // we need to make sure we get rid of this transaction
+		 rollbackTransaction(self);
+
+         /* Generate an error. */
+
+         rb_ibruby_raise(status, "Error committing transaction.");
+
+      }
+
+      transaction->handle = 0;
+
+   }
+
+   else
+
+   {
+
+      /* Generate an error. */
+
+      rb_ibruby_raise(NULL, "1. Transaction is not active.");
+
+   }
+
+   
+
+   /* Notify each connection of the transactions end. */
+
+   rb_tx_released(rb_iv_get(self, "@connections"), self);
+
+   
+
+   /* Clear the connections list. */
+
+   rb_iv_set(self, "@connections", rb_ary_new());
+
+   
+
+   return(self);
+
+}
+
 
 
 
@@ -388,6 +457,7 @@ static VALUE rollbackTransaction(VALUE self)
 
       
 
+		//fprintf( stderr, "transaction rolling back\n" );	
       if(isc_rollback_transaction(status, &transaction->handle) != 0)
 
       {
@@ -1307,6 +1377,8 @@ void Init_Transaction(VALUE module)
    rb_define_method(cTransaction, "initialize_copy", forbidObjectCopy, 1);
 
    rb_define_method(cTransaction, "active?", transactionIsActive, 0);
+
+   rb_define_method(cTransaction, "forceCommit", forceCommitTransaction, 0);
 
    rb_define_method(cTransaction, "commit", commitTransaction, 0);
 
