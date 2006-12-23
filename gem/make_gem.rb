@@ -17,7 +17,7 @@ platform      = nil
 fileset       = []
 major_version = 0
 minor_version = 5
-build_number  = 1
+build_number  = 2
 version       = "#{major_version}.#{minor_version}.#{build_number}"
 library  = 'ib_lib.so'
 if PLATFORM.include?('win32')
@@ -64,7 +64,7 @@ spec = Gem::Specification.new do |s|
    s.name             = 'ibruby'
    s.version          = version
    s.author           = 'Peter Wood, Richard Vowles'
-   s.email            = 'paw220470@yahoo.ie, rvowles@codegear.com'
+   s.email            = 'paw220470@yahoo.ie, richard@developers-inc.co.nz'
    s.homepage         = 'http://rubyforge.org/projects/ibruby/'
    s.platform         = platform
    s.summary          = 'Ruby interface library for the InterBase database.'
