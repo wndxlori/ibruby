@@ -62,13 +62,13 @@ module IBRuby
       
       sql << ")"
       
-      puts "sql is #{sql}"
+      #puts "sql is #{sql}"
       
       sql
     end
     
     def create_index(conn)
-      puts #{to_sql} vs #{self.to_sql}"
+      #puts #{to_sql} vs #{self.to_sql}"
       conn.execute_immediate(self.to_sql)
     end
     
@@ -110,7 +110,7 @@ module IBRuby
       @foreign_cols=foreign_cols
       @foreign_table_name=foreign_table_name
       
-      puts "constraint created #{to_sql}"
+      #puts "constraint created #{to_sql}"
     end
     
     def to_sql
@@ -163,7 +163,7 @@ module IBRuby
     SQL_FOREIGN_KEYS = :SQL_FOREIGN_KEYS
     
     def initialize(name, columns=[], indices=[], constraints=[] )
-      puts "table name new table: #{name}"
+      #puts "table name new table: #{name}"
       @name = name.to_s.upcase
       @columns = columns
       @indices = indices
@@ -179,7 +179,7 @@ module IBRuby
       @indices = InterBaseMetaFunctions.indices(conn,@name)
       @constraints = InterBaseMetaFunctions.table_constraints(conn,@name)
       
-      puts "#{@constraints.size} constraints found"
+      #puts "#{@constraints.size} constraints found"
       
       @constraints.each() {|c| c.table = self }
       
@@ -187,13 +187,13 @@ module IBRuby
     end
     
     def drop_table(conn)
-      puts "DROP TABLE #{name}"
+      #puts "DROP TABLE #{name}"
       conn.execute_immediate( "DROP TABLE #{name}" )
     end
     
     def create_table(conn)
       to_sql.each() do |sql|
-        puts "executing: #{sql}"
+        #puts "executing: #{sql}"
         conn.execute_immediate( sql )
       end
     end
@@ -270,7 +270,7 @@ module IBRuby
       
       sql << ")"
       
-      puts sql
+      #puts sql
       sql
     end
   end
@@ -387,7 +387,7 @@ module IBRuby
           sql << " ORDER BY r.rdb$field_position"
         end
         
-        puts "sql: #{sql}"
+        #puts "sql: #{sql}"
         
         #            sql = "SELECT RF.RDB$FIELD_NAME, F.RDB$FIELD_TYPE, "\
         #                  "F.RDB$FIELD_LENGTH, F.RDB$FIELD_PRECISION, "\
@@ -423,7 +423,7 @@ module IBRuby
               types[field_name] = type
             end
             
-            puts "col: #{type.to_sql}"
+            #puts "col: #{type.to_sql}"
           end
           
         #end
@@ -486,7 +486,7 @@ module IBRuby
 
     def self.db_type_cast( conn, column_type, column_value )
       sql = "SELECT CAST(#{column_value} AS #{column_type}) FROM RDB$DATABASE ROWS 1 TO 1"
-      puts "db_type_cast: #{sql}"
+      #puts "db_type_cast: #{sql}"
       retVal = nil
       conn.execute_immediate(sql) do |row|
         retVal = row[0]
@@ -593,7 +593,7 @@ module IBRuby
 
       
       if !actual_default.nil?
-        puts "actual default #{actual_default}"
+        #puts "actual default #{actual_default}"
         @default = actual_default
       else
         validate_default_source(default_source)
@@ -609,13 +609,13 @@ module IBRuby
     
     def validate_default_source(default_source)
       if !default_source.nil?
-        puts "checking default: #{default_source}"
+        #puts "checking default: #{default_source}"
         match = Regexp.new( '^\s*DEFAULT\s+(.*)\s*', Regexp::IGNORECASE )
         matchData = match.match(default_source.to_s)
         if matchData
           @default = matchData[1]
           
-          puts "result was #{@default} type is #{@type}"
+          #puts "result was #{@default} type is #{@type}"
           
           if @default
             if InterBaseColumn.expects_quoting(self)
@@ -640,7 +640,7 @@ module IBRuby
           end
          end
       else
-        puts "default source passed is null"
+        #puts "default source passed is null"
         @default = nil
       end
     end
@@ -765,14 +765,14 @@ module IBRuby
     # we should also check to see if this table has indexes which need to be dropped and re-created
     # but the migrations user should really do that
     def rename_column( connection, new_column_name )
-      puts "alter table #{@table_name} alter column #{@name} to #{new_column_name}"
+      #puts "alter table #{@table_name} alter column #{@name} to #{new_column_name}"
       connection.execute_immediate( "alter table #{@table_name} alter column #{@name} to #{new_column_name}" )
     end
     
     # this column does not exist in the database, please create it!
     def add_column( connection )
       validate  # ensure sensible defaults
-      puts "alter table #{@table_name} add #{self.to_sql}"
+      #puts "alter table #{@table_name} add #{self.to_sql}"
       connection.execute_immediate( "alter table #{@table_name} add #{self.to_sql}" )
     end
     
@@ -781,7 +781,7 @@ module IBRuby
       
       if new_column.type != self   # should use == defined above
         change_type_sql = "ALTER TABLE #{@table_name} alter #{@name} type #{new_column.to_s}"
-        puts change_type_sql
+        #puts change_type_sql
         conn.execute_immediate(change_type_sql)
       end
 
@@ -799,7 +799,7 @@ module IBRuby
       if (new_column.default != @default) || (new_column.type != self)
         # now the default change, which is complicated!
         defaultSource = new_column.default.nil? ? "" : ("default " << InterBaseMetaFunctions.quote(new_column.default.to_s, new_column ) )
-        puts "alter table #{@table_name} add ib$$temp type #{new_column.to_s} #{defaultSource}"
+        #puts "alter table #{@table_name} add ib$$temp type #{new_column.to_s} #{defaultSource}"
         conn.execute_immediate("alter table #{@table_name} add ib$$temp #{new_column.to_s} #{defaultSource}")
         
         # standard hack to change the default type
