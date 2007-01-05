@@ -482,9 +482,9 @@ VALUE toValue(XSQLVAR *entry,
 
             memcpy(&length, entry->sqldata, 2);
 
-            if(length > 0)
+            //if(length > 0)
 
-            {
+            //{
 
                array = ALLOC_N(char, length + 1);
 
@@ -504,7 +504,7 @@ VALUE toValue(XSQLVAR *entry,
 
                }
 
-            }
+            //}
 
             break;
 
