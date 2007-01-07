@@ -756,7 +756,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
                      rb_ibruby_raise(status,
 
-                                       "Error checking for generator.");
+                                       "Error checking for generator(fetch).");
 
                   }
 
@@ -768,7 +768,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
                   rb_ibruby_raise(status,
 
-                                    "Error checking for generator.");
+                                    "Error checking for generator(execute).");
 
                }
 
@@ -778,7 +778,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
             {
 
-               rb_ibruby_raise(status, "Error checking for generator.");
+               rb_ibruby_raise(status, "Error checking for generator(prepare).");
 
             }
 
