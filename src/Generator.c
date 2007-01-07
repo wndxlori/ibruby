@@ -682,7 +682,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
    isc_stmt_handle statement = 0;
 
-   ISC_STATUS      status[20];
+   ISC_STATUS      status[40];
 
 
 
@@ -708,7 +708,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
          {
 
-            char sql[100];
+            char sql[400]; // argh! memory blowout - was 100
 
 
 
@@ -814,7 +814,7 @@ int checkForGenerator(const char *name, isc_db_handle *connection)
 
       {
 
-         rb_ibruby_raise(status, "Error checking for generator.");
+         rb_ibruby_raise(status, "Error checking for generator (transaction).");
 
       }
 
@@ -882,7 +882,7 @@ int installGenerator(const char *name, isc_db_handle *connection)
 
       {
 
-         char sql[100];
+         char sql[400];
 
 
 
@@ -1006,7 +1006,7 @@ int deleteGenerator(const char *name, isc_db_handle *connection)
 
       {
 
-         char sql[100];
+         char sql[400];
 
 
 
