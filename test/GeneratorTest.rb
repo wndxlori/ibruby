@@ -36,7 +36,7 @@ class GeneratorTest < Test::Unit::TestCase
    def test01
       assert(Generator::exists?('TEST_GEN', @connections[0]) == false)
       g = Generator::create('TEST_GEN', @connections[0])
-      assert(Generator::exists?('TEST_GEN', @connections[0]))
+      10.times() { assert(Generator::exists?('TEST_GEN', @connections[0])) }
       assert(g.last == 0)
       assert(g.next(1) == 1)
       assert(g.last == 1)
@@ -46,5 +46,16 @@ class GeneratorTest < Test::Unit::TestCase
       
       g.drop
       assert(Generator::exists?('TEST_GEN', @connections[0]) == false)
-   end
+    end
+    
+    def test02
+      4.times() do 
+        @connections[0].execute_immediate( 'create table sample(a integer not null)' )
+        @connections[0].execute_immediate( 'alter table sample add primary key (a)' )
+        assert(Generator::exists?('SAMPLE_GEN', @connections[0]) == false)
+        g = Generator::create('SAMPLE_GEN', @connections[0])
+        g.drop
+        @connections[0].execute_immediate( 'drop table sample' )
+      end
+    end
 end
