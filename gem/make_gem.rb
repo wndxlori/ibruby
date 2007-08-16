@@ -24,6 +24,9 @@ if PLATFORM.include?('win32')
    platform = Gem::Platform::WIN32
 elsif PLATFORM.include?('linux')
    platform = Gem::Platform::LINUX_586
+elsif PLATFORM.include?('darwin')
+   platform = Gem::Platform::CURRENT
+   library  = 'ib_lib.bundle'
 else
    raise "Unrecognised platform, gem creation cancelled."
 end
@@ -52,7 +55,7 @@ Dir::chdir(basedir)
 # Check that the library exists.
 if File::exist?("#{srcdir}#{library}")
    puts "Copying '#{library}' into #{libdir}."
-   FileUtils::cp("#{srcdir}#{library}", "#{libdir}ib_lib.so")
+   FileUtils::cp("#{srcdir}#{library}", "#{libdir}#{library}")
 else
    raise "The #{library} library file does not exist in the #{srcdir} directory."
 end
