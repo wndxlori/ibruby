@@ -53,8 +53,8 @@ class TypeTest < Test::Unit::TestCase
          row  = rows.fetch
          assert(row[0].kind_of?(Integer))
          assert(row[1].instance_of?(Float))
-         assert(row[2].instance_of?(Float))
-         assert(row[3].instance_of?(Float))
+         assert(row[2].kind_of?(Numeric))
+         assert(row[3].kind_of?(Numeric))
          assert(row[4].instance_of?(Date))
          assert(row[5].instance_of?(Time))
          assert(row[6].instance_of?(String))
@@ -75,8 +75,8 @@ class TypeTest < Test::Unit::TestCase
          row  = rows.fetch
          assert(row[0].kind_of?(Integer))
          assert(row[1].instance_of?(Float))
-         assert(row[2].instance_of?(Float))
-         assert(row[3].instance_of?(Float))
+         assert(row[2].kind_of?(Numeric))
+         assert(row[3].kind_of?(Numeric))
          assert(row[4].instance_of?(Time))
          assert(row[5].instance_of?(Time))
          assert(row[6].instance_of?(String))

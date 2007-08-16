@@ -32,8 +32,8 @@
 #require 'TypeTest'
 #require 'SQLTypeTest'
 #if PLATFORM.include?('powerpc-darwin') == false
-#   require 'BackupRestoreTest'
-#   require 'AddRemoveUserTest'
+   #require 'BackupRestoreTest'
+   #require 'AddRemoveUserTest'
 #end
 #-------------------------------------------------------------------------------
 SPECIALS = ['AddRemoveUserTest',

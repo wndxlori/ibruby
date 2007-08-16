@@ -71,10 +71,10 @@ class DatabaseTest < Test::Unit::TestCase
       dropRole
       dropUser
       
-      #~ if File::exist?(DB_FILE)
-         #~ db = Database.new(DB_FILE)
-         #~ db.drop(DB_USER_NAME, DB_PASSWORD)
-      #~ end
+      if File::exist?(DB_FILE)
+         db = Database.new(DB_FILE)
+         db.drop(DB_USER_NAME, DB_PASSWORD)
+      end
       puts "#{self.class.name} finished." if TEST_LOGGING
    end
       
