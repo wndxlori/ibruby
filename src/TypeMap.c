@@ -44,6 +44,9 @@
 
  * @version 1.0
 
+ * Contributor(s):
+       Borland Software Corporation dba CodeGear
+
  */
 
 
@@ -811,7 +814,8 @@ void setParameters(XSQLDA *parameters, VALUE array, VALUE source)
             default :
 			   {
 			   char buf[300];
-			   ltoa( type, buf, 10 );
+			   // Darwin does not have ltoa(). Hence using sprintf() for ltoa() equiv.
+			   sprintf( buf, "%d ", type );
 			   strcat( buf, "Unknown SQL type encountered in statement parameter set." );
 			   rb_raise(rb_eException, buf );
                }

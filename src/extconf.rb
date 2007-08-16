@@ -11,6 +11,9 @@ if PLATFORM.include?("win32")
 elsif PLATFORM.include?("linux")
    $LDFLAGS = $LDFLAGS + " -lgds"
    $CFLAGS  = $CFLAGS + " -DOS_UNIX"
+elsif PLATFORM.include?("darwin")
+   $LDFLAGS = $LDFLAGS + " -arch_multiple -arch i386 -arch ppc -lgds"
+   $CFLAGS  = $CFLAGS + " -arch i386 -arch ppc -DOS_UNIX"
 end
 
 # Make sure the interbase stuff is included.
