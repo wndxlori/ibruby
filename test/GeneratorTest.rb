@@ -53,6 +53,7 @@ class GeneratorTest < Test::Unit::TestCase
         assert(Generator::exists?('SAMPLE_GEN', @connections[0]) == false)
         g = Generator::create('SAMPLE_GEN', @connections[0])
         g.drop
+        trans.commit
       end
     end
 end
