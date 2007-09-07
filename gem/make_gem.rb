@@ -17,7 +17,7 @@ platform      = nil
 fileset       = []
 major_version = 0
 minor_version = 5
-build_number  = 4
+build_number  = 5
 version       = "#{major_version}.#{minor_version}.#{build_number}"
 library  = 'ib_lib.so'
 if PLATFORM.include?('win32')
