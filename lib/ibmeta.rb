@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------
 # ibmeta.rb
 #-------------------------------------------------------------------------------
-# Copyright © Peter Wood, 2005; Richard Vowles, 2006
+# Copyright ï¿½ Peter Wood, 2005; Richard Vowles, 2006
 #
 # The contents of this file are subject to the Mozilla Public License Version
 # 1.1 (the "License"); you may not use this file except in compliance with the
@@ -287,7 +287,7 @@ module IBRuby
     
     def self.quote( value, column_meta_data )
       if column_meta_data.expects_quoting
-        '#{value}'
+        "\'#{value}\'"
       elsif ((column_meta_data.type == InterBaseColumn::BLOB) && (column_meta_data.sub_type != 1 ) )
         raise IBRubyException.new("'#{value}' is not a valid default for this column #{column_meta_data.name}.")
       else
@@ -504,7 +504,7 @@ module IBRuby
     # allow these to be overriden
     @@default_precision = 10
     @@default_scale = 2
-    @@default_length = 255
+    @@default_length = 252  #so string indexes work by default
   
     # A definition for a base SQL type.
     BOOLEAN                          = :BOOLEAN
